@@ -1,4 +1,5 @@
-﻿using BookStoreCatalog_API.Models;
+﻿using BookStoreCatalog_API.DataStore;
+using BookStoreCatalog_API.Models;
 using BookStoreCatalog_API.Models.DTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -41,14 +42,25 @@ namespace BookStoreCatalog_API.Controllers
         /// (TEST) Get all the Books
         /// </summary>
         /// <returns> A fake list of Books </returns>
-        [HttpGet("{test}")]
-        public IEnumerable<BookModelDTO> GetAllTestDTO(string test)
+        [HttpGet("{id}:int")]
+        public IEnumerable<BookModelDTO> GetAllTestDTO(int id)
         {
             return new List<BookModelDTO>
             {
                 new BookModelDTO { Id = 99, Title = "Test3" },
                 new BookModelDTO { Id = 999, Title = "Test4" }
             };
+        }
+
+        //----------------------------------------------
+        /// <summary>
+        /// (TEST) Get all the Books
+        /// </summary>
+        /// <returns> A fake list of Books </returns>
+        [HttpGet("{storage}")]
+        public IEnumerable<BookModelDTO> GetAllTestStorage(string storage)
+        {
+            return BookDataStore.bookList;
         }
     }
 }

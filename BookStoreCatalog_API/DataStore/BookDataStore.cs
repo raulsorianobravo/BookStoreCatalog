@@ -2,14 +2,12 @@
 
 namespace BookStoreCatalog_API.DataStore
 {
-    public class BookDataStore
+    public static class BookDataStore
     {
-        public List<BookModelDTO> bookList = new List<BookModelDTO> 
+        public static List<BookModelDTO> bookList = new List<BookModelDTO> 
         {
             new BookModelDTO{Id=991,Title="Test5"},
             new BookModelDTO{Id=992,Title="Test6"}            
         };
-
-        public BookDataStore() { }
     }
 }
