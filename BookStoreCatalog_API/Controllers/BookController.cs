@@ -21,14 +21,17 @@ namespace BookStoreCatalog_API.Controllers
         }
 
         //----------------------------------------------
-
+        /// <summary>
+        /// (TEST) Get all the Books
+        /// </summary>
+        /// <returns> A fake list of Books </returns>
         [HttpGet]
         public IEnumerable<BookModel> GetAllTest()
         {
             return new List<BookModel>
             {
-                new BookModel { Id = -1, Title = "Test1" },
-                new BookModel { Id = -2, Title = "Test2" }
+                new BookModel { Id = 99, Title = "Test1" },
+                new BookModel { Id = 999, Title = "Test2" }
             };
         }
     }
