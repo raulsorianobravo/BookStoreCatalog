@@ -28,13 +28,15 @@ namespace BookStoreCatalog_API.Controllers
         /// </summary>
         /// <returns> A fake list of Books </returns>
         [HttpGet]
-        public IEnumerable<BookModel> GetAllTest()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public ActionResult<IEnumerable<BookModel>> GetAllTest()
         {
-            return new List<BookModel>
-            {
-                new BookModel { Id = 99, Title = "Test1" },
-                new BookModel { Id = 999, Title = "Test2" }
-            };
+            return Ok(
+                new List<BookModel>
+                {
+                    new BookModel { Id = 99, Title = "Test1" },
+                    new BookModel { Id = 999, Title = "Test2" }
+                });
         }
 
         //----------------------------------------------
@@ -42,7 +44,8 @@ namespace BookStoreCatalog_API.Controllers
         /// (TEST) Get all the Books
         /// </summary>
         /// <returns> A fake list of Books </returns>
-        [HttpGet("{id}:int")]
+        [HttpGet("DTO/{id}:int")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public IEnumerable<BookModelDTO> GetAllTestDTO(int id)
         {
             return new List<BookModelDTO>
@@ -57,10 +60,38 @@ namespace BookStoreCatalog_API.Controllers
         /// (TEST) Get all the Books
         /// </summary>
         /// <returns> A fake list of Books </returns>
-        [HttpGet("{storage}")]
-        public IEnumerable<BookModelDTO> GetAllTestStorage(string storage)
+        [HttpGet("Storage/{storage}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public ActionResult<IEnumerable<BookModelDTO>> GetAllTestStorage(string storage)
         {
-            return BookDataStore.bookList;
+            return Ok(BookDataStore.bookList);
+        }
+
+        //----------------------------------------------
+        /// <summary>
+        /// Get the book by ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>the book that match with the ID passed </returns>
+        [HttpGet("{id}:int")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult<BookModelDTO> GetBook(int id)
+        {
+            if (id == 0) 
+            { 
+                return BadRequest();
+            }
+
+            var book = BookDataStore.bookList.FirstOrDefault(book => book.Id == id);
+
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(book);
         }
     }
 }
