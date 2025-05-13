@@ -44,7 +44,7 @@ namespace BookStoreCatalog_API.Controllers
         /// (TEST) Get all the Books
         /// </summary>
         /// <returns> A fake list of Books </returns>
-        [HttpGet("DTO/{id}:int")]
+        [HttpGet("TEST/{id}:int")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public IEnumerable<BookModelDTO> GetAllTestDTO(int id)
         {
@@ -60,7 +60,7 @@ namespace BookStoreCatalog_API.Controllers
         /// (TEST) Get all the Books
         /// </summary>
         /// <returns> A fake list of Books </returns>
-        [HttpGet("Storage/{storage}")]
+        [HttpGet("TEST/{storage}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<BookModelDTO>> GetAllTestStorage(string storage)
         {
@@ -107,6 +107,11 @@ namespace BookStoreCatalog_API.Controllers
         }
 
         //----------------------------------------------
+        /// <summary>
+        /// Create a new Book
+        /// </summary>
+        /// <param name="newBook"></param>
+        /// <returns>The result of the operation</returns>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -142,6 +147,11 @@ namespace BookStoreCatalog_API.Controllers
         }
 
         //----------------------------------------------
+        /// <summary>
+        /// Delete a book
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>The result of the operation</returns>
         [HttpDelete("{id}:int")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -167,10 +177,17 @@ namespace BookStoreCatalog_API.Controllers
 
         }
         //----------------------------------------------
+        /// <summary>
+        /// Update a book
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="modBook"></param>
+        /// <returns>The result of the operation</returns>
         [HttpPut("{id}:int")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        
         public IActionResult UpdateBook(int id, [FromBody] BookModelDTO modBook)
         {
             if (modBook == null || id != modBook.Id)
@@ -193,5 +210,8 @@ namespace BookStoreCatalog_API.Controllers
 
             return NoContent();
         }
+
+        //----------------------------------------------
+
     }
 }
