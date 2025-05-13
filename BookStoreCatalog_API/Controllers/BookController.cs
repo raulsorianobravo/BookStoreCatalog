@@ -141,7 +141,8 @@ namespace BookStoreCatalog_API.Controllers
             return CreatedAtRoute("GetBook", new { id = newBook.Id }, newBook);
         }
 
-        [HttpDelete]
+        //----------------------------------------------
+        [HttpDelete("{id}:int")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -164,6 +165,33 @@ namespace BookStoreCatalog_API.Controllers
             return NoContent();
 
 
+        }
+        //----------------------------------------------
+        [HttpPut("{id}:int")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult UpdateBook(int id, [FromBody] BookModelDTO modBook)
+        {
+            if (modBook == null || id != modBook.Id)
+            {
+                return BadRequest();
+            }
+
+            var book = BookDataStore.bookList.FirstOrDefault(book => book.Id == id);
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            book.Author = modBook.Author;
+            book.Title = modBook.Title;
+            book.Description = modBook.Description;
+            book.AuthorUrl = modBook.AuthorUrl;
+            book.DescriptionUrl = modBook.DescriptionUrl;
+            book.TitleUrl = modBook.TitleUrl;
+
+            return NoContent();
         }
     }
 }
