@@ -113,6 +113,12 @@ namespace BookStoreCatalog_API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<BookModelDTO> CreateBook( [FromBody] BookModelDTO newBook)
         {
+            
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
             if (newBook == null)
             {
                 return BadRequest(newBook);
@@ -125,15 +131,39 @@ namespace BookStoreCatalog_API.Controllers
             else
             {
                 newBook.Id = BookDataStore.bookList.OrderByDescending(book => book.Id).FirstOrDefault().Id + 1;
-                if (BookDataStore.bookList.Any(
-                    book => book.Id == newBook.Id
-                ))
+                if (BookDataStore.bookList.Any(book => book.Title.ToLower() == newBook.Title.ToLower()))
                 {
-                    return BadRequest(newBook);
+                    ModelState.AddModelError("SameBook", "This Book Exists");
+                    return BadRequest(ModelState);
                 }
                 BookDataStore.bookList.Add(newBook);
             }
             return CreatedAtRoute("GetBook", new { id = newBook.Id }, newBook);
+        }
+
+        [HttpDelete]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult DeleteBook(int id)
+        {
+            if (id == 0) 
+            { 
+                return BadRequest(); 
+            }
+            var book = BookDataStore.bookList.FirstOrDefault(book => book.Id == id);
+
+            if ( book == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                BookDataStore.bookList.Remove(book);
+            }
+            return NoContent();
+
+
         }
     }
 }
