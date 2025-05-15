@@ -15,6 +15,8 @@ builder.Services.AddControllers().AddNewtonsoftJson();
 //--- Add DbContext Service InMemory option
 builder.Services.AddDbContext<ApplicationDBContextInMem>(options => options.UseInMemoryDatabase(builder.Configuration.GetConnectionString("BookDbInMem")));
 
+//--- Add DbContext Service SQL Server
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("BookDb")));
 
 var app = builder.Build();
 
