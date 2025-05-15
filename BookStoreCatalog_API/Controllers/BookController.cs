@@ -2,6 +2,7 @@
 using BookStoreCatalog_API.Models;
 using BookStoreCatalog_API.Models.DTO;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookStoreCatalog_API.Controllers
@@ -11,15 +12,15 @@ namespace BookStoreCatalog_API.Controllers
     public class BookController : ControllerBase
     {
         //----------------------------------------------
-
+        private readonly ILogger<BookController> _logger;
         //----------------------------------------------
 
         /// <summary>
         /// Constructor - Injection
         /// </summary>
-        public BookController()
+        public BookController(ILogger<BookController> logger)
         {
-            
+            _logger = logger;
         }
 
         //----------------------------------------------
@@ -31,6 +32,7 @@ namespace BookStoreCatalog_API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<BookModel>> GetAllTest()
         {
+            _logger.LogInformation("TEST Get all the books");
             return Ok(
                 new List<BookModel>
                 {
@@ -48,6 +50,7 @@ namespace BookStoreCatalog_API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public IEnumerable<BookModelDTO> GetAllTestDTO(int id)
         {
+            _logger.LogInformation("TEST Get all books from DTOs");
             return new List<BookModelDTO>
             {
                 new BookModelDTO { Id = 99, Title = "Test3" },
@@ -64,6 +67,8 @@ namespace BookStoreCatalog_API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<BookModelDTO>> GetAllTestStorage(string storage)
         {
+            _logger.LogInformation($"{storage}");
+            _logger.LogInformation("TEST Get all books from Storage");
             return Ok(BookDataStore.bookList);
         }
 
@@ -76,6 +81,7 @@ namespace BookStoreCatalog_API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<BookModel>> GetAll()
         {
+            _logger.LogInformation("Get all the Books");
             return Ok(BookDataStore.bookList);
         }
 
@@ -93,6 +99,8 @@ namespace BookStoreCatalog_API.Controllers
         {
             if (id == 0) 
             { 
+                _logger.LogInformation($"{nameof(GetBook)}");
+                _logger.LogError("Error: not valid ID");
                 return BadRequest();
             }
 
@@ -100,9 +108,10 @@ namespace BookStoreCatalog_API.Controllers
 
             if (book == null)
             {
+                _logger.LogError("Error: There's no Book with this ID");
                 return NotFound();
             }
-
+            _logger.LogInformation("Sucessful:"+ $"{book.Title}");
             return Ok(book);
         }
 
@@ -121,15 +130,18 @@ namespace BookStoreCatalog_API.Controllers
             
             if(!ModelState.IsValid)
             {
+                _logger.LogError("Error:" + ModelState.Values);
                 return BadRequest(ModelState);
             }
             
             if (newBook == null)
             {
+                _logger.LogError("Error: Empty Book");
                 return BadRequest(newBook);
             }
             if (newBook.Id > 0)
-            { 
+            {
+                _logger.LogError("Error: The ID is not valid");
                 return StatusCode(StatusCodes.Status500InternalServerError); 
             }
 
@@ -139,6 +151,8 @@ namespace BookStoreCatalog_API.Controllers
                 if (BookDataStore.bookList.Any(book => book.Title.ToLower() == newBook.Title.ToLower()))
                 {
                     ModelState.AddModelError("SameBook", "This Book Exists");
+
+                    _logger.LogError("Error:" + ModelState.ToList()[0].Value.Errors[0].ErrorMessage);
                     return BadRequest(ModelState);
                 }
                 BookDataStore.bookList.Add(newBook);
@@ -212,6 +226,31 @@ namespace BookStoreCatalog_API.Controllers
         }
 
         //----------------------------------------------
+        [HttpPatch("{id}:int")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
 
+        public IActionResult UpdatePatchBook(int id, JsonPatchDocument <BookModelDTO> patchBook)
+        {
+            if (patchBook == null || id == 0)
+            {
+                return BadRequest();
+            }
+
+            var book = BookDataStore.bookList.FirstOrDefault(book => book.Id == id);
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            patchBook.ApplyTo(book, ModelState);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            return NoContent();
+        }
     }
 }
