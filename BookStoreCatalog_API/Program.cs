@@ -1,3 +1,6 @@
+using BookStoreCatalog_API.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -8,6 +11,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddControllers().AddNewtonsoftJson();
+
+//--- Add DbContext Service InMemory option
+builder.Services.AddDbContext<ApplicationDBContextInMem>(options => options.UseInMemoryDatabase(builder.Configuration.GetConnectionString("BookDbInMem")));
+
 
 var app = builder.Build();
 
