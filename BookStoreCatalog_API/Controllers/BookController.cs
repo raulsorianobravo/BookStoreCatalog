@@ -261,7 +261,8 @@ namespace BookStoreCatalog_API.Controllers
 
             return NoContent();
         }
-
+        //----------------------------------------------
+        //               IN MEMORY
         //----------------------------------------------
         /// <summary>
         /// Get all the Books
@@ -276,6 +277,37 @@ namespace BookStoreCatalog_API.Controllers
             return books;
                 
         }
+
+        //----------------------------------------------
+        /// <summary>
+        /// Get the book by ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>the book that match with the ID passed </returns>
+        [HttpGet("InMem/{id}:int", Name = "GetBookInMem")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult<BookModelDTO> GetBookInMem(int id)
+        {
+            if (id == 0)
+            {
+                _logger.LogInformation($"{nameof(GetBookInMem)}");
+                _logger.LogError("Error: not valid ID");
+                return BadRequest();
+            }
+
+            var book = _context.Books.FirstOrDefault(book => book.Id == id);
+
+            if (book == null)
+            {
+                _logger.LogError("Error: There's no Book with this ID");
+                return NotFound();
+            }
+            _logger.LogInformation("Sucessful:" + $"{book.Title}");
+            return Ok(book);
+        }
+
 
         //----------------------------------------------
         /// <summary>
@@ -323,6 +355,38 @@ namespace BookStoreCatalog_API.Controllers
             _context.SaveChanges();
 
             return CreatedAtRoute("GetBook", new { id = newBook.Id }, newBook);
+        }
+
+        //----------------------------------------------
+        /// <summary>
+        /// Delete a book
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>The result of the operation</returns>
+        [HttpDelete("InMem/{id}:int")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult DeleteBookInMem(int id)
+        {
+            if (id == 0)
+            {
+                return BadRequest();
+            }
+            var book = _context.Books.FirstOrDefault(book => book.Id == id);    
+
+            if (book == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                _context.Books.Remove(book);
+                _context.SaveChanges();
+            }
+            return NoContent();
+
+
         }
     }
 }
