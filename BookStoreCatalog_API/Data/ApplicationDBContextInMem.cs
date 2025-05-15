@@ -16,6 +16,7 @@ namespace BookStoreCatalog_API.Data
                 new BookModel()
                 {
                     Id = 1,
+                    idBook = "1",
                     Title = "Title991",
                     TitleUrl = "URL991",
                     Author = "Author991",

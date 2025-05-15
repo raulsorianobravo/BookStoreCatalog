@@ -9,6 +9,9 @@ namespace BookStoreCatalog_API.Models.DTO
         //--- Book id
         public int Id { get; set; }
 
+        //--- Internal ID
+        public string idBook { get; set; }
+
         //--- Book Title         
         [Required]
         [MaxLength(50)]

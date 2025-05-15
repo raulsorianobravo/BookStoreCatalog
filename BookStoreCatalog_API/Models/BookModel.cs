@@ -22,7 +22,11 @@ namespace BookStoreCatalog_API.Models
         #region PROPERTIES
 
         //--- Book id
+        [Key]
         public int Id { get; set; }
+
+        //--- Internal ID
+        public string idBook { get; set; }
 
         //--- Book Title         
         [Required]
