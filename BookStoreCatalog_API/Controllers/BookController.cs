@@ -28,6 +28,8 @@ namespace BookStoreCatalog_API.Controllers
         {
             _logger = logger;
             _context = context;
+            _context.Database.EnsureCreated();
+
         }
 
         //----------------------------------------------
@@ -81,7 +83,7 @@ namespace BookStoreCatalog_API.Controllers
 
         //----------------------------------------------
         /// <summary>
-        ///  Get all the Books
+        /// Get all the Books
         /// </summary>
         /// <returns> The list of Books </returns>
         [HttpGet]
@@ -258,6 +260,69 @@ namespace BookStoreCatalog_API.Controllers
             }
 
             return NoContent();
+        }
+
+        //----------------------------------------------
+        /// <summary>
+        /// Get all the Books
+        /// </summary>
+        /// <returns> A fake list of Books </returns>
+        [HttpGet("InMem/")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public ActionResult<IEnumerable<BookModel>> GetAllInMem()
+        {
+            _logger.LogInformation("TEST Get all the books");
+            var books = _context.Books.ToList();
+            return books;
+                
+        }
+
+        //----------------------------------------------
+        /// <summary>
+        /// Create a new Book
+        /// </summary>
+        /// <param name="newBook"></param>
+        /// <returns>The result of the operation</returns>
+        [HttpPost("InMem/")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public ActionResult<BookModel> CreateBookInMem([FromBody] BookModel newBook)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError("Error:" + ModelState.Values);
+                return BadRequest(ModelState);
+            }
+
+            if (newBook == null)
+            {
+                _logger.LogError("Error: Empty Book");
+                return BadRequest(newBook);
+            }
+            if (newBook.Id > 0)
+            {
+                _logger.LogError("Error: The ID is not valid");
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+
+            else
+            {
+                newBook.Id = _context.Books.OrderByDescending(x => x.Id).FirstOrDefault().Id+1;
+                if (_context.Books.Any(book => book.Title.ToLower() == newBook.Title.ToLower()))
+                {
+                    ModelState.AddModelError("SameBook", "This Book Exists, don't insist");
+                    _logger.LogError("Error:" + ModelState.ToList()[0].Value.Errors[0].ErrorMessage);
+                    return BadRequest(ModelState);
+                }
+                
+            }
+
+            _context.Books.Add(newBook);
+            _context.SaveChanges();
+
+            return CreatedAtRoute("GetBook", new { id = newBook.Id }, newBook);
         }
     }
 }
