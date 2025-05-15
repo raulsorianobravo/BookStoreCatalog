@@ -297,17 +297,27 @@ namespace BookStoreCatalog_API.Controllers
                 return BadRequest();
             }
 
-            var book = _context.Books.FirstOrDefault(book => book.Id == id);
+            var book = new BookModel();
 
-            if (book == null)
+            try
             {
-                _logger.LogError("Error: There's no Book with this ID");
-                return NotFound();
+                book = _context.Books.FirstOrDefault(book => book.Id == id);
+                if (book != null)
+                {
+                    _logger.LogInformation("Sucessful:" + $"{book.Title}");
+                    return Ok(book);
+                }
+                else
+                {
+                    _logger.LogError("Error: There's no Book with this ID");
+                    return NotFound();
+                }
             }
-            _logger.LogInformation("Sucessful:" + $"{book.Title}");
-            return Ok(book);
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
-
 
         //----------------------------------------------
         /// <summary>
@@ -341,12 +351,24 @@ namespace BookStoreCatalog_API.Controllers
 
             else
             {
-                newBook.Id = _context.Books.OrderByDescending(x => x.Id).FirstOrDefault().Id+1;
-                if (_context.Books.Any(book => book.Title.ToLower() == newBook.Title.ToLower()))
+                try
                 {
-                    ModelState.AddModelError("SameBook", "This Book Exists, don't insist");
-                    _logger.LogError("Error:" + ModelState.ToList()[0].Value.Errors[0].ErrorMessage);
-                    return BadRequest(ModelState);
+                    int a = 0;
+                    if(_context.Books.Count() > 0)
+                        newBook.Id = _context.Books.OrderByDescending(x => x.Id).FirstOrDefault().Id + 1;
+                        
+                    else newBook.Id = 1;    
+
+                    if (_context.Books.Any(book => book.Title.ToLower() == newBook.Title.ToLower()))
+                    {
+                        ModelState.AddModelError("SameBook", "This Book Exists, don't insist");
+                        _logger.LogError("Error:" + ModelState.ToList()[0].Value.Errors[0].ErrorMessage);
+                        return BadRequest(ModelState);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex);
                 }
                 
             }
