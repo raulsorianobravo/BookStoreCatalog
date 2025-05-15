@@ -1,4 +1,5 @@
-﻿using BookStoreCatalog_API.DataStore;
+﻿using BookStoreCatalog_API.Data;
+using BookStoreCatalog_API.DataStore;
 using BookStoreCatalog_API.Models;
 using BookStoreCatalog_API.Models.DTO;
 using Microsoft.AspNetCore.Http;
@@ -12,15 +13,21 @@ namespace BookStoreCatalog_API.Controllers
     public class BookController : ControllerBase
     {
         //----------------------------------------------
+        //--- Logger
         private readonly ILogger<BookController> _logger;
+
+        //--- DbContext
+        private readonly ApplicationDBContextInMem _context;
+
         //----------------------------------------------
 
         /// <summary>
         /// Constructor - Injection
         /// </summary>
-        public BookController(ILogger<BookController> logger)
+        public BookController(ILogger<BookController> logger, ApplicationDBContextInMem context)
         {
             _logger = logger;
+            _context = context;
         }
 
         //----------------------------------------------
