@@ -4,6 +4,7 @@ using BookStoreCatalog_API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookStoreCatalog_API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250516062105_DefaultData")]
+    partial class DefaultData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -78,18 +81,6 @@ namespace BookStoreCatalog_API.Migrations
                             Title = "Title991",
                             TitleUrl = "URL991",
                             idBook = "1"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Author = "Author992",
-                            AuthorUrl = "URL992",
-                            CreatedAt = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Description992",
-                            DescriptionUrl = "URL992",
-                            Title = "Title992",
-                            TitleUrl = "URL992",
-                            idBook = "2"
                         });
                 });
 #pragma warning restore 612, 618
