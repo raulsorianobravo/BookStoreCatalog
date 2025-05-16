@@ -19,17 +19,20 @@ namespace BookStoreCatalog_API.Controllers
         //--- DbContext
         private readonly ApplicationDBContextInMem _context;
 
+        //--- DbContext SQL Server
+        private readonly ApplicationDbContext _dbContext;
+
         //----------------------------------------------
 
         /// <summary>
         /// Constructor - Injection
         /// </summary>
-        public BookController(ILogger<BookController> logger, ApplicationDBContextInMem context)
+        public BookController(ILogger<BookController> logger, ApplicationDBContextInMem context, ApplicationDbContext dbContext)
         {
             _logger = logger;
             _context = context;
             _context.Database.EnsureCreated();
-
+            _dbContext = dbContext;
         }
 
         //----------------------------------------------
@@ -409,6 +412,123 @@ namespace BookStoreCatalog_API.Controllers
             return NoContent();
 
 
+        }
+
+        //----------------------------------------------
+        //               DataBase
+        //----------------------------------------------
+        /// <summary>
+        /// Get all the Books
+        /// </summary>
+        /// <returns> A fake list of Books </returns>
+        [HttpGet("DB/")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public ActionResult<IEnumerable<BookModel>> GetAllDb()
+        {
+            _logger.LogInformation("Get all the books");
+            var books = _dbContext.Books.ToList();
+            return books;
+
+        }
+        //----------------------------------------------
+        /// <summary>
+        /// Get the book by ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>the book that match with the ID passed </returns>
+        [HttpGet("DB/{id}:int", Name = "GetBookDb")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult<BookModelDTO> GetBookDb(int id)
+        {
+            if (id == 0)
+            {
+                _logger.LogInformation($"{nameof(GetBookInMem)}");
+                _logger.LogError("Error: not valid ID");
+                return BadRequest();
+            }
+
+            var book = new BookModel();
+
+            try
+            {
+                book = _dbContext.Books.FirstOrDefault(book => book.Id == id);
+                if (book != null)
+                {
+                    _logger.LogInformation("Sucessful:" + $"{book.Title}");
+                    return Ok(book);
+                }
+                else
+                {
+                    _logger.LogError("Error: There's no Book with this ID");
+                    return NotFound();
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        //----------------------------------------------
+        /// <summary>
+        /// Create a new Book
+        /// </summary>
+        /// <param name="newBook"></param>
+        /// <returns>The result of the operation</returns>
+        [HttpPost("DB/")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public ActionResult<BookModel> CreateBookDb([FromBody] BookModel newBook)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError("Error:" + ModelState.Values);
+                return BadRequest(ModelState);
+            }
+
+            if (newBook == null)
+            {
+                _logger.LogError("Error: Empty Book");
+                return BadRequest(newBook);
+            }
+            if (newBook.Id > 0)
+            {
+                _logger.LogError("Error: The ID is not valid");
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+
+            else
+            {
+                try
+                {
+                    int a = 0;
+                    //if (_dbContext.Books.Count() > 0)
+                    //    newBook.Id = _dbContext.Books.OrderByDescending(x => x.Id).FirstOrDefault().Id + 1;
+
+                    //else newBook.Id = 1;
+
+                    if (_dbContext.Books.Any(book => book.Title.ToLower() == newBook.Title.ToLower()))
+                    {
+                        ModelState.AddModelError("SameBook", "This Book Exists, don't insist");
+                        _logger.LogError("Error:" + ModelState.ToList()[0].Value.Errors[0].ErrorMessage);
+                        return BadRequest(ModelState);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex);
+                }
+
+            }
+
+            _dbContext.Books.Add(newBook);
+            _dbContext.SaveChanges();
+
+            return CreatedAtRoute("GetBook", new { id = newBook.Id }, newBook);
         }
     }
 }
