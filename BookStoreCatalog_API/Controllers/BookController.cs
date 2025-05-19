@@ -1,4 +1,5 @@
-﻿using BookStoreCatalog_API.Data;
+﻿using AutoMapper;
+using BookStoreCatalog_API.Data;
 using BookStoreCatalog_API.DataStore;
 using BookStoreCatalog_API.Models;
 using BookStoreCatalog_API.Models.DTO;
@@ -23,17 +24,19 @@ namespace BookStoreCatalog_API.Controllers
         //--- DbContext SQL Server
         private readonly ApplicationDbContext _dbContext;
 
+        private readonly IMapper _mapper;
         //----------------------------------------------
 
         /// <summary>
         /// Constructor - Injection
         /// </summary>
-        public BookController(ILogger<BookController> logger, ApplicationDBContextInMem context, ApplicationDbContext dbContext)
+        public BookController(ILogger<BookController> logger, ApplicationDBContextInMem context, ApplicationDbContext dbContext, IMapper mapper)
         {
             _logger = logger;
             _context = context;
             _context.Database.EnsureCreated();
             _dbContext = dbContext;
+            _mapper = mapper;
         }
 
         //----------------------------------------------
@@ -836,7 +839,7 @@ namespace BookStoreCatalog_API.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns>the book that match with the ID passed </returns>
-        [HttpGet("DbAsync/{id}:int", Name = "GetBookDb")]
+        [HttpGet("DbAsync/{id}:int", Name = "GetBookDbAsync")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -942,7 +945,7 @@ namespace BookStoreCatalog_API.Controllers
             await _dbContext.Books.AddAsync(bookTemp);
             await _dbContext.SaveChangesAsync();
 
-            return CreatedAtRoute("GetBookDb", new { id = bookTemp.Id }, bookTemp);
+            return CreatedAtRoute("GetBookDbAsync", new { id = bookTemp.Id }, bookTemp);
         }
 
         //----------------------------------------------
@@ -1063,6 +1066,274 @@ namespace BookStoreCatalog_API.Controllers
                 Description = tempBook.Description,
                 CreatedAt = tempBook.CreatedAt
             };
+
+            _dbContext.Books.Update(bookTemp);
+            await _dbContext.SaveChangesAsync();
+            return NoContent();
+        }
+
+        //----------------------------------------------
+        //               DataBase Automapper
+        //----------------------------------------------
+        /// <summary>
+        /// Get all the Books
+        /// </summary>
+        /// <returns> A fake list of Books </returns>
+        [HttpGet("DbMap/")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<BookModelDTO>>> GetAllDbMap()
+        {
+            _logger.LogInformation("Get all the books");
+
+            IEnumerable<BookModel> bookList = await _dbContext.Books.ToListAsync();
+            
+            //return books;
+            return Ok(_mapper.Map<IEnumerable<BookModelDTO>>(bookList));
+
+        }
+
+
+        //----------------------------------------------
+        /// <summary>
+        /// Get the book by ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>the book that match with the ID passed </returns>
+        [HttpGet("DbMap/{id}:int", Name = "GetBookDbMap")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<BookModelDTO>> GetBookDbMap(int id)
+        {
+            if (id == 0)
+            {
+                _logger.LogInformation($"{nameof(GetBookInMem)}");
+                _logger.LogError("Error: not valid ID");
+                return BadRequest();
+            }
+
+            var book = new BookModel();
+
+            try
+            {
+                book = await _dbContext.Books.FirstOrDefaultAsync(book => book.Id == id);
+                if (book != null)
+                {
+                    _logger.LogInformation("Sucessful:" + $"{book.Title}");
+                    return Ok(_mapper.Map<BookModelDTO>(book));
+                }
+                else
+                {
+                    _logger.LogError("Error: There's no Book with this ID");
+                    return NotFound();
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        //----------------------------------------------
+        /// <summary>
+        /// Create a new Book
+        /// </summary>
+        /// <param name="newBook"></param>
+        /// <returns>The result of the operation</returns>
+        [HttpPost("DbMap/")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<BookModel>> CreateBookDbDTOMap([FromBody] BookModelCreateDTO newBook)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError("Error:" + ModelState.Values);
+                return BadRequest(ModelState);
+            }
+
+            if (newBook == null)
+            {
+                _logger.LogError("Error: Empty Book");
+                return BadRequest(newBook);
+            }
+
+            //--- Not necessary cause DTOs don't have Id
+            //if (newBook.Id > 0)
+            //{
+            //    _logger.LogError("Error: The ID is not valid");
+            //    return StatusCode(StatusCodes.Status500InternalServerError);
+            //}
+
+            else
+            {
+                try
+                {
+                    int a = 0;
+                    //if (_dbContext.Books.Count() > 0)
+                    //    newBook.Id = _dbContext.Books.OrderByDescending(x => x.Id).FirstOrDefault().Id + 1;
+
+                    //else newBook.Id = 1;
+
+                    if (await _dbContext.Books.AnyAsync(book => book.Title.ToLower() == newBook.Title.ToLower()))
+                    {
+                        ModelState.AddModelError("SameBook", "This Book Exists, don't insist");
+                        _logger.LogError("Error:" + ModelState.ToList()[0].Value.Errors[0].ErrorMessage);
+                        return BadRequest(ModelState);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex);
+                }
+
+            }
+
+            BookModel bookTemp = _mapper.Map<BookModel>(newBook);
+
+            //BookModel bookTemp = new()
+            //{
+            //    idBook = newBook.idBook,
+            //    Title = newBook.Title,
+            //    TitleUrl = newBook.TitleUrl,
+            //    AuthorUrl = newBook.AuthorUrl,
+            //    Author = newBook.Author,
+            //    DescriptionUrl = newBook.DescriptionUrl,
+            //    Description = newBook.Description,
+            //    CreatedAt = newBook.CreatedAt
+            //};
+
+            await _dbContext.Books.AddAsync(bookTemp);
+            await _dbContext.SaveChangesAsync();
+
+            return CreatedAtRoute("GetBookDb", new { id = bookTemp.Id }, bookTemp);
+        }
+
+        //----------------------------------------------
+        /// <summary>
+        /// Delete a book
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>The result of the operation</returns>
+        [HttpDelete("DbMap/{id}:int")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteBookDbMap(int id)
+        {
+            if (id == 0)
+            {
+                return BadRequest();
+            }
+            var book = await _dbContext.Books.FirstOrDefaultAsync(book => book.Id == id);
+
+            if (book == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                _dbContext.Books.Remove(book);
+                await _dbContext.SaveChangesAsync();
+            }
+            return NoContent();
+        }
+
+        //----------------------------------------------
+        /// <summary>
+        /// Update a book
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="modBook"></param>
+        /// <returns>The result of the operation</returns>
+        [HttpPut("DbMap/{id}:int")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+
+        public async Task<IActionResult> UpdateBookDbDTOMap(int id, [FromBody] BookModelUpdateDTO modBook)
+        {
+            if (modBook == null || id != modBook.Id)
+            {
+                return BadRequest();
+            }
+
+            var book = await _dbContext.Books.FirstOrDefaultAsync(book => book.Id == id);
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            book = _mapper.Map<BookModel>(modBook);
+            
+            //book.idBook = modBook.idBook;
+            //book.Author = modBook.Author;
+            //book.Title = modBook.Title;
+            //book.Description = modBook.Description;
+            //book.AuthorUrl = modBook.AuthorUrl;
+            //book.DescriptionUrl = modBook.DescriptionUrl;
+            //book.TitleUrl = modBook.TitleUrl;
+
+            _dbContext.Books.Update(book);
+            await _dbContext.SaveChangesAsync();
+            return NoContent();
+        }
+
+        //----------------------------------------------
+        [HttpPatch("DbMap/{id}:int")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+
+        public async Task<IActionResult> UpdatePatchBookDbDTOMap(int id, JsonPatchDocument<BookModelUpdateDTO> patchBook)
+        {
+            if (patchBook == null || id == 0)
+            {
+                return BadRequest();
+            }
+
+            var book = await _dbContext.Books.AsNoTracking().FirstOrDefaultAsync(book => book.Id == id);
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            BookModelUpdateDTO tempBook = _mapper.Map<BookModelUpdateDTO>(book);
+
+            //BookModelUpdateDTO tempBook = new()
+            //{
+            //    Id = book.Id,
+            //    idBook = book.idBook,
+            //    Title = book.Title,
+            //    TitleUrl = book.TitleUrl,
+            //    AuthorUrl = book.AuthorUrl,
+            //    Author = book.Author,
+            //    DescriptionUrl = book.DescriptionUrl,
+            //    Description = book.Description,
+            //    CreatedAt = book.CreatedAt
+            //};
+
+            patchBook.ApplyTo(tempBook, ModelState);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            BookModel bookTemp = _mapper.Map<BookModel>(tempBook);
+
+            //BookModel bookTemp = new()
+            //{
+            //    Id = tempBook.Id,
+            //    idBook = tempBook.idBook,
+            //    Title = tempBook.Title,
+            //    TitleUrl = tempBook.TitleUrl,
+            //    AuthorUrl = tempBook.AuthorUrl,
+            //    Author = tempBook.Author,
+            //    DescriptionUrl = tempBook.DescriptionUrl,
+            //    Description = tempBook.Description,
+            //    CreatedAt = tempBook.CreatedAt
+            //};
 
             _dbContext.Books.Update(bookTemp);
             await _dbContext.SaveChangesAsync();
