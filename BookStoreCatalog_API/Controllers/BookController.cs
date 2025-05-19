@@ -5,6 +5,7 @@ using BookStoreCatalog_API.Models.DTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookStoreCatalog_API.Controllers
 {
@@ -528,7 +529,119 @@ namespace BookStoreCatalog_API.Controllers
             _dbContext.Books.Add(newBook);
             _dbContext.SaveChanges();
 
-            return CreatedAtRoute("GetBook", new { id = newBook.Id }, newBook);
+            return CreatedAtRoute("GetBookDb", new { id = newBook.Id }, newBook);
+        }
+
+        //----------------------------------------------
+        /// <summary>
+        /// Delete a book
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>The result of the operation</returns>
+        [HttpDelete("DB/{id}:int")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult DeleteBookDb(int id)
+        {
+            if (id == 0)
+            {
+                return BadRequest();
+            }
+            var book = _dbContext.Books.FirstOrDefault(book => book.Id == id);
+
+            if (book == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                _dbContext.Books.Remove(book);
+                _dbContext.SaveChanges();
+            }
+            return NoContent();
+        }
+
+        //----------------------------------------------
+        /// <summary>
+        /// Update a book
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="modBook"></param>
+        /// <returns>The result of the operation</returns>
+        [HttpPut("DB/{id}:int")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+
+        public IActionResult UpdateBookDb(int id, [FromBody] BookModel modBook)
+        {
+            if (modBook == null || id != modBook.Id)
+            {
+                return BadRequest();
+            }
+
+            var book = _dbContext.Books.FirstOrDefault(book => book.Id == id);
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            book.idBook = modBook.idBook;
+            book.Author = modBook.Author;
+            book.Title = modBook.Title;
+            book.Description = modBook.Description;
+            book.AuthorUrl = modBook.AuthorUrl;
+            book.DescriptionUrl = modBook.DescriptionUrl;
+            book.TitleUrl = modBook.TitleUrl;
+
+            _dbContext.Books.Update(book);
+            _dbContext.SaveChanges();
+            return NoContent();
+        }
+
+        //----------------------------------------------
+        [HttpPatch("DB/{id}:int")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+
+        public IActionResult UpdatePatchBookDb(int id, JsonPatchDocument<BookModel> patchBook)
+        {
+            if (patchBook == null || id == 0)
+            {
+                return BadRequest();
+            }
+
+            var book = _dbContext.Books.AsNoTracking().FirstOrDefault(book => book.Id == id);
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            patchBook.ApplyTo(book, ModelState);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            BookModel TempBook = new()
+            {
+                Id = book.Id,
+                idBook = book.idBook,
+                Title = book.Title,
+                TitleUrl = book.TitleUrl,
+                AuthorUrl = book.AuthorUrl,
+                Author = book.Author,
+                DescriptionUrl = book.DescriptionUrl,
+                Description = book.Description,
+                CreatedAt = book.CreatedAt
+            };
+
+            _dbContext.Books.Update(TempBook);
+            _dbContext.SaveChanges();
+            return NoContent();
         }
     }
+
 }
