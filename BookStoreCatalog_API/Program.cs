@@ -1,3 +1,4 @@
+using BookStoreCatalog_API;
 using BookStoreCatalog_API.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,6 +18,8 @@ builder.Services.AddDbContext<ApplicationDBContextInMem>(options => options.UseI
 
 //--- Add DbContext Service SQL Server
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("BookDb")));
+
+builder.Services.AddAutoMapper(typeof(MappingConfig));
 
 var app = builder.Build();
 
