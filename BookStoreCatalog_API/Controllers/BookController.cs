@@ -3,6 +3,7 @@ using BookStoreCatalog_API.Data;
 using BookStoreCatalog_API.DataStore;
 using BookStoreCatalog_API.Models;
 using BookStoreCatalog_API.Models.DTO;
+using BookStoreCatalog_API.Repository.IRepository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -25,18 +26,22 @@ namespace BookStoreCatalog_API.Controllers
         private readonly ApplicationDbContext _dbContext;
 
         private readonly IMapper _mapper;
+
+        private readonly IBookRepo _bookRepo;
+
         //----------------------------------------------
 
         /// <summary>
         /// Constructor - Injection
         /// </summary>
-        public BookController(ILogger<BookController> logger, ApplicationDBContextInMem context, ApplicationDbContext dbContext, IMapper mapper)
+        public BookController(ILogger<BookController> logger, ApplicationDBContextInMem context, ApplicationDbContext dbContext, IMapper mapper, IBookRepo bookRepo)
         {
             _logger = logger;
             _context = context;
             _context.Database.EnsureCreated();
             _dbContext = dbContext;
             _mapper = mapper;
+            _bookRepo = bookRepo;
         }
 
         //----------------------------------------------
@@ -1338,6 +1343,26 @@ namespace BookStoreCatalog_API.Controllers
             _dbContext.Books.Update(bookTemp);
             await _dbContext.SaveChangesAsync();
             return NoContent();
+        }
+
+        //----------------------------------------------
+        //               DataBase Repository
+        //----------------------------------------------
+        /// <summary>
+        /// Get all the Books
+        /// </summary>
+        /// <returns> A fake list of Books </returns>
+        [HttpGet("DbRepo/")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<BookModelDTO>>> GetAllDbRepo()
+        {
+            _logger.LogInformation("Get all the books");
+
+            IEnumerable<BookModel> bookList = await _bookRepo.GetAll();
+
+            //return books;
+            return Ok(_mapper.Map<IEnumerable<BookModelDTO>>(bookList));
+
         }
     }
 }

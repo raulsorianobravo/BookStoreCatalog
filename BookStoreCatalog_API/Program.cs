@@ -1,5 +1,7 @@
 using BookStoreCatalog_API;
 using BookStoreCatalog_API.Data;
+using BookStoreCatalog_API.Repository;
+using BookStoreCatalog_API.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +22,10 @@ builder.Services.AddDbContext<ApplicationDBContextInMem>(options => options.UseI
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("BookDb")));
 
 builder.Services.AddAutoMapper(typeof(MappingConfig));
+
+
+builder.Services.AddScoped<IBookRepo, BookModelRepo>();
+
 
 var app = builder.Build();
 
