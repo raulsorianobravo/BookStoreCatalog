@@ -24,7 +24,7 @@ namespace BookStoreCatalog_API.Repository
             await Save();
         }
 
-        public async Task<T> Get(Expression<Func<T, bool>>? filter = null, bool tracked = true)
+        public async Task<T> GetBook(Expression<Func<T, bool>>? filter = null, bool tracked = true)
         {
             IQueryable<T> query = dbSet;
             if (!tracked)

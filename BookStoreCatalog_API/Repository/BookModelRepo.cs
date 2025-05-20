@@ -13,7 +13,7 @@ namespace BookStoreCatalog_API.Repository
             _dbContext = dbContext;
         }
 
-        public async Task<BookModel> Update(BookModel entity)
+        public async Task<BookModel> UpdateBook(BookModel entity)
         {
             entity.CreatedAt = DateTime.Now;
             _dbContext.Books.Update(entity);
