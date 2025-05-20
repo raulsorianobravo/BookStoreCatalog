@@ -1388,7 +1388,7 @@ namespace BookStoreCatalog_API.Controllers
 
             try
             {
-                book = await _bookRepo.Get(book => book.Id == id);
+                book = await _bookRepo.GetBook(book => book.Id == id);
                 if (book != null)
                 {
                     _logger.LogInformation("Sucessful:" + $"{book.Title}");
@@ -1448,7 +1448,7 @@ namespace BookStoreCatalog_API.Controllers
 
                     //else newBook.Id = 1;
 
-                    if (await _bookRepo.Get(book => book.Title.ToLower() == newBook.Title.ToLower()) !=null)
+                    if (await _bookRepo.GetBook(book => book.Title.ToLower() == newBook.Title.ToLower()) !=null)
                     {
                         ModelState.AddModelError("SameBook", "This Book Exists, don't insist");
                         _logger.LogError("Error:" + ModelState.ToList()[0].Value.Errors[0].ErrorMessage);
@@ -1498,7 +1498,7 @@ namespace BookStoreCatalog_API.Controllers
             {
                 return BadRequest();
             }
-            var book = await _bookRepo.Get(book => book.Id == id);
+            var book = await _bookRepo.GetBook(book => book.Id == id);
 
             if (book == null)
             {
@@ -1509,6 +1509,114 @@ namespace BookStoreCatalog_API.Controllers
                 _bookRepo.Remove(book);
                 //await _dbContext.SaveChangesAsync();
             }
+            return NoContent();
+        }
+
+        //----------------------------------------------
+        /// <summary>
+        /// Update a book
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="modBook"></param>
+        /// <returns>The result of the operation</returns>
+        [HttpPut("DbRepo/{id}:int")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+
+        public async Task<IActionResult> UpdateBookDbDTORepo(int id, [FromBody] BookModelUpdateDTO modBook)
+        {
+            if (modBook == null || id != modBook.Id)
+            {
+                return BadRequest();
+            }
+
+            var book = await _bookRepo.GetBook(book => book.Id == id, false);
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            book = _mapper.Map<BookModel>(modBook);
+
+            //book.idBook = modBook.idBook;
+            //book.Author = modBook.Author;
+            //book.Title = modBook.Title;
+            //book.Description = modBook.Description;
+            //book.AuthorUrl = modBook.AuthorUrl;
+            //book.DescriptionUrl = modBook.DescriptionUrl;
+            //book.TitleUrl = modBook.TitleUrl;
+
+            //_dbContext.Books.Update(book);
+            //await _dbContext.SaveChangesAsync();
+
+            await _bookRepo.UpdateBook(book);
+
+            return NoContent();
+        }
+
+        //----------------------------------------------
+        [HttpPatch("DbRepo/{id}:int")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+
+        public async Task<IActionResult> UpdatePatchBookDbDTORepo(int id, JsonPatchDocument<BookModelUpdateDTO> patchBook)
+        {
+            if (patchBook == null || id == 0)
+            {
+                return BadRequest();
+            }
+
+            //var book = await _dbContext.Books.AsNoTracking().FirstOrDefaultAsync(book => book.Id == id);
+            var book = await _bookRepo.GetBook(book => book.Id == id, false);
+
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            BookModelUpdateDTO tempBook = _mapper.Map<BookModelUpdateDTO>(book);
+
+            //BookModelUpdateDTO tempBook = new()
+            //{
+            //    Id = book.Id,
+            //    idBook = book.idBook,
+            //    Title = book.Title,
+            //    TitleUrl = book.TitleUrl,
+            //    AuthorUrl = book.AuthorUrl,
+            //    Author = book.Author,
+            //    DescriptionUrl = book.DescriptionUrl,
+            //    Description = book.Description,
+            //    CreatedAt = book.CreatedAt
+            //};
+
+            patchBook.ApplyTo(tempBook, ModelState);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            BookModel bookTemp = _mapper.Map<BookModel>(tempBook);
+
+            //BookModel bookTemp = new()
+            //{
+            //    Id = tempBook.Id,
+            //    idBook = tempBook.idBook,
+            //    Title = tempBook.Title,
+            //    TitleUrl = tempBook.TitleUrl,
+            //    AuthorUrl = tempBook.AuthorUrl,
+            //    Author = tempBook.Author,
+            //    DescriptionUrl = tempBook.DescriptionUrl,
+            //    Description = tempBook.Description,
+            //    CreatedAt = tempBook.CreatedAt
+            //};
+
+            //_dbContext.Books.Update(bookTemp);
+            //await _dbContext.SaveChangesAsync();
+
+            await _bookRepo.UpdateBook(bookTemp);
+
             return NoContent();
         }
     }
