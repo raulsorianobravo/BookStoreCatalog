@@ -12,10 +12,10 @@ namespace BookStoreCatalog_API.Repository
         private readonly ApplicationDbContext _dbContext;
         internal DbSet<T> dbSet { get; set; }
 
-        public Repository(ApplicationDbContext _dbContext)
+        public Repository(ApplicationDbContext dbContext)
         {
-            _dbContext = _dbContext ?? throw new ArgumentNullException(nameof(_dbContext));
-            this.dbSet = _dbContext.Set<T>();
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(_dbContext));
+            this.dbSet = dbContext.Set<T>();
         }
 
         public async Task Create(T entity)
