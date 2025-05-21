@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 
 namespace BookStoreCatalog_API.Controllers
 {
@@ -29,6 +30,8 @@ namespace BookStoreCatalog_API.Controllers
 
         private readonly IBookRepo _bookRepo;
 
+        protected APIResponse _response;
+
         //----------------------------------------------
 
         /// <summary>
@@ -42,6 +45,8 @@ namespace BookStoreCatalog_API.Controllers
             _dbContext = dbContext;
             _mapper = mapper;
             _bookRepo = bookRepo;
+
+            _response = new APIResponse();
         }
 
         //----------------------------------------------
@@ -1618,6 +1623,93 @@ namespace BookStoreCatalog_API.Controllers
             await _bookRepo.UpdateBook(bookTemp);
 
             return NoContent();
+        }
+
+        //----------------------------------------------
+        //               DataBase Repository APIResponse
+        //----------------------------------------------
+        /// <summary>
+        /// Get all the Books
+        /// </summary>
+        /// <returns> A fake list of Books </returns>
+        [HttpGet("DbAPIResponse/")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<APIResponse>> GetAllDbAPIResponse()
+        {
+            try
+            {
+                _logger.LogInformation("Get all the books");
+
+                IEnumerable<BookModel> bookList = await _bookRepo.GetAll();
+
+                _response.Result = _mapper.Map<IEnumerable<BookModelDTO>>(bookList);
+                _response.StatusCode = HttpStatusCode.OK;
+
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string>()
+                {
+                    ex.Message
+                };
+
+                return _response;
+                
+            }
+
+
+        }
+
+        //----------------------------------------------
+        /// <summary>
+        /// Get the book by ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>the book that match with the ID passed </returns>
+        [HttpGet("DbAPIResponse/{id}:int", Name = "GetBookDbAPIResponse")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<APIResponse>> GetBookDbPIResponse(int id)
+        {
+            if (id == 0)
+            {
+                _logger.LogInformation($"{nameof(GetBookInMem)}");
+                _logger.LogError("Error: not valid ID");
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                return BadRequest(_response);
+            }
+
+            var book = new BookModel();
+
+            try
+            {
+                book = await _bookRepo.GetBook(book => book.Id == id);
+                if (book != null)
+                {
+                    _logger.LogInformation("Sucessful:" + $"{book.Title}");
+                    _response.IsSuccess = true;
+                    _response.Result = _mapper.Map<BookModelDTO>(book);
+                    _response.StatusCode = HttpStatusCode.OK;
+                    return Ok(_response);
+                }
+                else
+                {
+                    _logger.LogError("Error: There's no Book with this ID");
+                    _response.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(_response);
+                }
+            }
+            catch (Exception ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string>() { ex.Message };
+                return BadRequest(_response);
+            }
         }
     }
 }
