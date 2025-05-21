@@ -1711,5 +1711,237 @@ namespace BookStoreCatalog_API.Controllers
                 return BadRequest(_response);
             }
         }
+
+        //----------------------------------------------
+        /// <summary>
+        /// Create a new Book
+        /// </summary>
+        /// <param name="newBook"></param>
+        /// <returns>The result of the operation</returns>
+        [HttpPost("DbAPIResponse/")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<APIResponse>> CreateBookDbDTOAPIResponse([FromBody] BookModelCreateDTO newBook)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError("Error:" + ModelState.Values);
+                return BadRequest(ModelState);
+            }
+
+            if (newBook == null)
+            {
+                _logger.LogError("Error: Empty Book");
+                return BadRequest(newBook);
+            }
+
+            //--- Not necessary cause DTOs don't have Id
+            //if (newBook.Id > 0)
+            //{
+            //    _logger.LogError("Error: The ID is not valid");
+            //    return StatusCode(StatusCodes.Status500InternalServerError);
+            //}
+
+            else
+            {
+                try
+                {
+                    int a = 0;
+                    //if (_dbContext.Books.Count() > 0)
+                    //    newBook.Id = _dbContext.Books.OrderByDescending(x => x.Id).FirstOrDefault().Id + 1;
+
+                    //else newBook.Id = 1;
+
+                    if (await _bookRepo.GetBook(book => book.Title.ToLower() == newBook.Title.ToLower()) != null)
+                    {
+                        ModelState.AddModelError("SameBook", "This Book Exists, don't insist");
+                        _logger.LogError("Error:" + ModelState.ToList()[0].Value.Errors[0].ErrorMessage);
+                        return BadRequest(ModelState);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex);
+                }
+
+            }
+
+            BookModel bookTemp = _mapper.Map<BookModel>(newBook);
+
+            //BookModel bookTemp = new()
+            //{
+            //    idBook = newBook.idBook,
+            //    Title = newBook.Title,
+            //    TitleUrl = newBook.TitleUrl,
+            //    AuthorUrl = newBook.AuthorUrl,
+            //    Author = newBook.Author,
+            //    DescriptionUrl = newBook.DescriptionUrl,
+            //    Description = newBook.Description,
+            //    CreatedAt = newBook.CreatedAt
+            //};
+
+            await _bookRepo.Create(bookTemp);
+            _response.Result = bookTemp;
+            _response.StatusCode = HttpStatusCode.Created;
+            //await _dbContext.SaveChangesAsync();
+
+            return CreatedAtRoute("GetBookDb", new { id = bookTemp.Id }, _response);
+        }
+
+        //----------------------------------------------
+        /// <summary>
+        /// Delete a book
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>The result of the operation</returns>
+        [HttpDelete("DbAPIResponse/{id}:int")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteBookDbAPIResponse(int id)
+        {
+            if (id == 0)
+            {
+                _response.IsSuccess = false;
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                return BadRequest(_response);
+            }
+            var book = await _bookRepo.GetBook(book => book.Id == id);
+
+            if (book == null)
+            {
+                _response.IsSuccess = false;
+                _response.StatusCode = HttpStatusCode.NotFound; 
+                return NotFound(_response);
+            }
+            else
+            {
+                await _bookRepo.Remove(book);
+                //await _dbContext.SaveChangesAsync();
+                _response.StatusCode=HttpStatusCode.NoContent;
+            }
+            return Ok(_response);
+        }
+
+        //----------------------------------------------
+        /// <summary>
+        /// Update a book
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="modBook"></param>
+        /// <returns>The result of the operation</returns>
+        [HttpPut("DbAPIResponse/{id}:int")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+
+        public async Task<IActionResult> UpdateBookDbDTOAPIResponse(int id, [FromBody] BookModelUpdateDTO modBook)
+        {
+            if (modBook == null || id != modBook.Id)
+            {
+                _response.IsSuccess = false;
+                _response.StatusCode = HttpStatusCode.BadRequest; 
+                return BadRequest(_response);
+            }
+
+            var book = await _bookRepo.GetBook(book => book.Id == id, false);
+            if (book == null)
+            {
+                _response.IsSuccess = false;
+                _response.StatusCode = HttpStatusCode.NotFound;
+                return NotFound(_response);
+            }
+
+            book = _mapper.Map<BookModel>(modBook);
+
+            //book.idBook = modBook.idBook;
+            //book.Author = modBook.Author;
+            //book.Title = modBook.Title;
+            //book.Description = modBook.Description;
+            //book.AuthorUrl = modBook.AuthorUrl;
+            //book.DescriptionUrl = modBook.DescriptionUrl;
+            //book.TitleUrl = modBook.TitleUrl;
+
+            //_dbContext.Books.Update(book);
+            //await _dbContext.SaveChangesAsync();
+
+            await _bookRepo.UpdateBook(book);
+            _response.StatusCode = HttpStatusCode.NoContent;
+
+
+            return Ok(_response);
+        }
+
+        //----------------------------------------------
+        [HttpPatch("DbAPIResponse/{id}:int")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+
+        public async Task<IActionResult> UpdatePatchBookDbDTOAPIResponse(int id, JsonPatchDocument<BookModelUpdateDTO> patchBook)
+        {
+            if (patchBook == null || id == 0)
+            {
+                _response.IsSuccess = false;
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                return BadRequest();
+            }
+
+            //var book = await _dbContext.Books.AsNoTracking().FirstOrDefaultAsync(book => book.Id == id);
+            var book = await _bookRepo.GetBook(book => book.Id == id, false);
+
+            if (book == null)
+            {
+                _response.IsSuccess = false;
+                _response.StatusCode = HttpStatusCode.NotFound;
+                return NotFound();
+            }
+
+            BookModelUpdateDTO tempBook = _mapper.Map<BookModelUpdateDTO>(book);
+
+            //BookModelUpdateDTO tempBook = new()
+            //{
+            //    Id = book.Id,
+            //    idBook = book.idBook,
+            //    Title = book.Title,
+            //    TitleUrl = book.TitleUrl,
+            //    AuthorUrl = book.AuthorUrl,
+            //    Author = book.Author,
+            //    DescriptionUrl = book.DescriptionUrl,
+            //    Description = book.Description,
+            //    CreatedAt = book.CreatedAt
+            //};
+
+            patchBook.ApplyTo(tempBook, ModelState);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            BookModel bookTemp = _mapper.Map<BookModel>(tempBook);
+
+            //BookModel bookTemp = new()
+            //{
+            //    Id = tempBook.Id,
+            //    idBook = tempBook.idBook,
+            //    Title = tempBook.Title,
+            //    TitleUrl = tempBook.TitleUrl,
+            //    AuthorUrl = tempBook.AuthorUrl,
+            //    Author = tempBook.Author,
+            //    DescriptionUrl = tempBook.DescriptionUrl,
+            //    Description = tempBook.Description,
+            //    CreatedAt = tempBook.CreatedAt
+            //};
+
+            //_dbContext.Books.Update(bookTemp);
+            //await _dbContext.SaveChangesAsync();
+
+            await _bookRepo.UpdateBook(bookTemp);
+            _response.StatusCode = HttpStatusCode.NoContent;
+
+            return Ok(_response);
+        }
     }
 }
