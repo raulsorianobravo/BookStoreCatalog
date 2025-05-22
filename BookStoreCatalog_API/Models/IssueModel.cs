@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BookStoreCatalog_API.Models
 {
-    public class IssuesModel
+    public class IssueModel
     {
 
         [Key]
