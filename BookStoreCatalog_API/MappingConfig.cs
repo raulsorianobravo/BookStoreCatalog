@@ -16,6 +16,12 @@ namespace BookStoreCatalog_API
 
             CreateMap<BookModel, BookModelUpdateDTO>().ReverseMap();
 
+            //-------------------------------------------------
+
+            CreateMap<IssueModel, IssueModelDTO>().ReverseMap();
+            CreateMap<IssueModel, IssueModelCreateDTO>().ReverseMap();
+            CreateMap<IssueModel, IsssueModelUpdateDTO>().ReverseMap();
+
         }
 
     }
