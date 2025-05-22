@@ -6,6 +6,9 @@ namespace BookStoreCatalog_API.Models.DTO
     {
 
         [Required]
+        public int IssueId { get; set; }
+        
+        [Required]
         public int IssueNumber { get; set; }
 
         [Required]
