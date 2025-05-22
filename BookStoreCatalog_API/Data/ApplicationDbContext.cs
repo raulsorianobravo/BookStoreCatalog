@@ -7,6 +7,8 @@ namespace BookStoreCatalog_API.Data
     {
         public DbSet<BookModel> Books { get; set; }
 
+        public DbSet<IssueModel> Issues { get; set; }
+
         //public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         //{            
         //}
