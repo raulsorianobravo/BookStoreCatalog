@@ -26,6 +26,8 @@ builder.Services.AddAutoMapper(typeof(MappingConfig));
 
 builder.Services.AddScoped<IBookRepo, BookModelRepo>();
 
+builder.Services.AddScoped<IIssueRepo, IssueModelRepo>();
+
 
 var app = builder.Build();
 
