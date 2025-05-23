@@ -1,17 +1,19 @@
-﻿namespace BookStoreCatalog_web.Models.DTO
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace BookStoreCatalog_web.Models.DTO
 {
     public class IssueModelDTO
     {
-		[Required]
-		public int IssueNumber { get; set; }
+        [Required]
+        public int IssueNumber { get; set; }
 
-		[Required]
-		public int BookId { get; set; }
+        [Required]
+        public int BookId { get; set; }
 
-		public string IssueName { get; set; }
+        public string IssueName { get; set; }
 
-		public string IssueDescription { get; set; }
+        public string IssueDescription { get; set; }
 
-		public string extraInfo { get; set; }
-	}
+        public string extraInfo { get; set; }
+    }
 }
