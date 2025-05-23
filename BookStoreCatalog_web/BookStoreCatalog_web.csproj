@@ -7,11 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Models\DTO\IssueModelDTO.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Models\DTO\IssueModelDTO.cs" />
+    <PackageReference Include="AutoMapper" Version="14.0.0" />
   </ItemGroup>
 
   <ItemGroup>
