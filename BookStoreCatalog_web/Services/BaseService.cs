@@ -23,7 +23,7 @@ namespace BookStoreCatalog_web.Services
             {
                 var client = _httpClient.CreateClient("BookStoreClient");
                 HttpRequestMessage message = new HttpRequestMessage();
-                message.Headers.Add("Content-Type", "application/json");
+                message.Headers.Add("Accept", "application/json");
                 message.RequestUri = new Uri(apiRequest.URL);
 
                 if (apiRequest.Data != null)
