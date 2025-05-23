@@ -14,4 +14,8 @@
     <None Include="Models\DTO\IssueModelDTO.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BookStoreCatalogUtils\BookStoreCatalogUtils.csproj" />
+  </ItemGroup>
+
 </Project>
