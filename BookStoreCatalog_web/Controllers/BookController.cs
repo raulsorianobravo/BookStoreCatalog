@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
+using BookStoreCatalog_web.Models;
+using BookStoreCatalog_web.Models.DTO;
 using BookStoreCatalog_web.Services.IServices;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace BookStoreCatalog_web.Controllers
 {
@@ -18,6 +21,19 @@ namespace BookStoreCatalog_web.Controllers
         public IActionResult Index()
         {
             return View();
+        }
+
+        public async Task<IActionResult> IndexBook()
+        {
+            List<BookModelDTO> bookList = new List<BookModelDTO>();
+
+            var response = await _booService.GetAllBooks<APIResponse>();
+            if (response != null && response.IsSuccess)
+            {
+                bookList = JsonConvert.DeserializeObject<List<BookModelDTO>>(Convert.ToString(response.Result));
+            }
+
+            return View(bookList);
         }
     }
 }
