@@ -1,0 +1,52 @@
+﻿@model IEnumerable<BookStoreCatalog_web.Models.DTO.IssueModelDTO>
+@{
+    ViewData["Title"] = "IndexIssue";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>IndexIssue</h1>
+<div class="container p-4 border">
+    <div class=" = " row pb-2">
+        <div class=" col">
+            <h1 class="text-primary"> Book List</h1>
+        </div>
+        <div class="col text-end pt-1">
+            <a asp-controller="Issue" asp-action="CreateNewIssue" class="btn btn-outline-primary"><i class="bi bi-plus-square-fill"></i>New Issue</a>
+        </div>
+
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>IssueNumber</th>
+                <th>BookId</th>
+                <th>IssueName</th>
+                <th>IssueDescription</th>
+                <th>ExtraInfo</th>
+                <th>Title</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@((item.issueId).ToString())</td>
+                    <td>@item.IssueNumber</td>
+                    <td>@item.BookId</td>
+                    <td>@item.IssueName</td>
+                    <td>@item.IssueDescription</td>
+                    <td>@item.extraInfo</td>
+                    <td>@item.Book.Title</td>
+                    <td>
+                        <a asp-controller="Issue" asp-action="UpdateIssue" asp-route-issueId="@item.issueId" class="btn btn-success"><i class="bi bi-pencil-square"></i>Update Issue</a>
+                        <a asp-controller="Issue" asp-action="DeleteIssue" asp-route-issueId="@item.issueId" class="btn btn-danger"><i class="bi bi-trash3"></i>Delete Issue</a>
+
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>

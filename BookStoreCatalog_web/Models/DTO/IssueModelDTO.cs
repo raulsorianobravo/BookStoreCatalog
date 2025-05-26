@@ -4,6 +4,7 @@ namespace BookStoreCatalog_web.Models.DTO
 {
     public class IssueModelDTO
     {
+        public int issueId { get; set; }
         [Required]
         public int IssueNumber { get; set; }
 
@@ -15,5 +16,7 @@ namespace BookStoreCatalog_web.Models.DTO
         public string IssueDescription { get; set; }
 
         public string extraInfo { get; set; }
+
+        public BookModelDTO Book { get; set; }
     }
 }
