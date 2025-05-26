@@ -1,8 +1,40 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Components
+@model IEnumerable<BookStoreCatalog_web.Models.DTO.BookModelDTO>
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="row" style="--bs-gutter-x:0">
+    @foreach (var book in Model)
+    {
+        <div class="p-4 col-md-12 col-lg-6">
+            <div class="row" style="border-radius:20px; border: 1px solid">
+                <div class="col-4">
+                    <img class="d-block w-100 mt-2" style="border-radius:20px;" src="@book.DescriptionUrl" alt="Cover">
+                </div>
+                <div class="col-8">
+                    <p class="card-title text-info" style="font-size:xx-large">@book.Title</p>
+                    <p class="card-text">@((MarkupString)book.Author)</p>
+                </div>
+                <div class="col-12">
+                    <div class="row pb-3 pt-2">
+                        <div class="ccol-12 col-sm-4">
+                            <a href="" class="btn btn-primary form-control btn-block">Read</a>
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            <span class="pt-1 fw-bold fs-6">Description : @book.Description</span><br />
+                            <span class="pt-1 fw-bold fs-6">ID : @book.AuthorUrl &sup2</span><br />
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            <span class="text-info float-end font-weight-bold pt-1 fw-bold" style="font-size:18px">
+                                ID
+                                <span style="border-bottom:1px solid #0323EE">@book.idBook.ToString()</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 </div>
