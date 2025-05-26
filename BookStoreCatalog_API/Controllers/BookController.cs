@@ -1644,6 +1644,7 @@ namespace BookStoreCatalog_API.Controllers
 
                 _response.Result = _mapper.Map<IEnumerable<BookModelDTO>>(bookList);
                 _response.StatusCode = HttpStatusCode.OK;
+                _response.IsSuccess = true;
 
                 return Ok(_response);
             }
