@@ -35,5 +35,25 @@ namespace BookStoreCatalog_web.Controllers
 
             return View(bookList);
         }
+
+        public async Task<IActionResult> CreateNewBook()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateNewBook(BookModelCreateDTO book)
+        {
+            if (ModelState.IsValid) 
+            {
+                var response = await _booService.CreateBook<APIResponse>(book);
+                if (response != null && response.IsSuccess)
+                {
+                    return RedirectToAction(nameof(IndexBook));
+                }
+            }
+            return View(book);
+        }
     }
 }
