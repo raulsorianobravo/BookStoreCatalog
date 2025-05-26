@@ -68,10 +68,11 @@ namespace BookStoreCatalog_API.Controllers
             {
                 _logger.LogInformation("Get all the books");
 
-                IEnumerable<IssueModel> issueList = await _issueRepo.GetAll(includeProperties:"BookModel");
+                IEnumerable<IssueModel> issueList = await _issueRepo.GetAll(includeProperties:"Book");
 
-                _response.Result = _mapper.Map<IEnumerable<BookModelDTO>>(issueList);
+                _response.Result = _mapper.Map<IEnumerable<IssueModelDTO>>(issueList);
                 _response.StatusCode = HttpStatusCode.OK;
+                _response.IsSuccess = true;
 
                 return Ok(_response);
             }
