@@ -68,7 +68,7 @@ namespace BookStoreCatalog_API.Controllers
             {
                 _logger.LogInformation("Get all the books");
 
-                IEnumerable<IssueModel> issueList = await _issueRepo.GetAll();
+                IEnumerable<IssueModel> issueList = await _issueRepo.GetAll(includeProperties:"BookModel");
 
                 _response.Result = _mapper.Map<IEnumerable<BookModelDTO>>(issueList);
                 _response.StatusCode = HttpStatusCode.OK;
@@ -112,7 +112,7 @@ namespace BookStoreCatalog_API.Controllers
 
             try
             {
-                book = await _issueRepo.GetBook(book => book.IssueId == id);
+                book = await _issueRepo.GetBook(book => book.IssueId == id, includeProperties:"BookModel");
                 if (book != null)
                 {
                     _logger.LogInformation("Sucessful:" + $"{book.IssueName}");

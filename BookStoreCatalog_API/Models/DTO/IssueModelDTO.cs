@@ -18,6 +18,7 @@ namespace BookStoreCatalog_API.Models.DTO
 
         public string extraInfo { get; set; }
 
+        public BookModelDTO Book { get; set; }
 
     }
 }

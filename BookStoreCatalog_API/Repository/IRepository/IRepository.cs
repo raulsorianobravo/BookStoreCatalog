@@ -6,9 +6,9 @@ namespace BookStoreCatalog_API.Repository.IRepository
     {
         Task Create(T entity);
 
-        Task<List<T>> GetAll(Expression<Func<T,bool>>? filter = null);
+        Task<List<T>> GetAll(Expression<Func<T,bool>>? filter = null, string? includeProperties=null);
 
-        Task<T> GetBook(Expression<Func<T, bool>>? filter = null, bool tracked = true);
+        Task<T> GetBook(Expression<Func<T, bool>>? filter = null, bool tracked = true, string? includeProperties = null);
 
         Task Remove(T entity);
 
