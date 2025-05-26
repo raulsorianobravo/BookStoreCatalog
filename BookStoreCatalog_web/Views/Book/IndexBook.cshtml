@@ -37,7 +37,7 @@
                     <td>@item.Description</td>
                     <td>
                         <a asp-controller="Book" asp-action="UpdateBook" asp-route-Id="@item.Id" class="btn btn-success"><i class="bi bi-pencil-square"></i>Update Book</a>
-                        <a asp-controller="Book" asp-action="DeleteBook" class="btn btn-danger"><i class="bi bi-trash3"></i>Delete Book</a>
+                        <a asp-controller="Book" asp-action="DeleteBook" asp-route-Id="@item.Id" class="btn btn-danger"><i class="bi bi-trash3"></i>Delete Book</a>
 
                     </td>
                 </tr>
