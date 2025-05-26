@@ -12,6 +12,9 @@ builder.Services.AddAutoMapper(typeof(MappingConfig));
 builder.Services.AddHttpClient<IBookService,BookService>();
 builder.Services.AddScoped<IBookService, BookService>();
 
+builder.Services.AddHttpClient<IIssueService, IssueService>();
+builder.Services.AddScoped<IIssueService, IssueService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
