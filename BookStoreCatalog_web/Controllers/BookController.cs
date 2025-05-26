@@ -9,12 +9,12 @@ namespace BookStoreCatalog_web.Controllers
 {
     public class BookController : Controller
     {
-        private readonly IBookService _booService;
+        private readonly IBookService _bookService;
         private readonly IMapper _mapper;
 
         public BookController(IBookService bookService, IMapper mapper)
         {
-            _booService = bookService;
+            _bookService = bookService;
             _mapper = mapper;
         }
         
@@ -27,7 +27,7 @@ namespace BookStoreCatalog_web.Controllers
         {
             List<BookModelDTO> bookList = new List<BookModelDTO>();
 
-            var response = await _booService.GetAllBooks<APIResponse>();
+            var response = await _bookService.GetAllBooks<APIResponse>();
             if (response != null && response.IsSuccess)
             {
                 bookList = JsonConvert.DeserializeObject<List<BookModelDTO>>(Convert.ToString(response.Result));
@@ -47,13 +47,45 @@ namespace BookStoreCatalog_web.Controllers
         {
             if (ModelState.IsValid) 
             {
-                var response = await _booService.CreateBook<APIResponse>(book);
+                var response = await _bookService.CreateBook<APIResponse>(book);
                 if (response != null && response.IsSuccess)
                 {
                     return RedirectToAction(nameof(IndexBook));
                 }
             }
             return View(book);
+        }
+
+        
+        public async Task<IActionResult> UpdateBook(int Id)
+        {
+            var response = await _bookService.GetBook<APIResponse>(Id);
+
+            if (response != null && response.IsSuccess)
+            {
+                BookModelDTO bookDTO = JsonConvert.DeserializeObject<BookModelDTO>(Convert.ToString(response.Result));
+                BookModelUpdateDTO book = _mapper.Map<BookModelUpdateDTO>(bookDTO);
+                return View(book);
+            }
+
+            return NotFound();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateBook(BookModelUpdateDTO book)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _bookService.UpdateBook<APIResponse>(book);
+
+                if(response != null && response.IsSuccess)
+                {
+                    return RedirectToAction(nameof(IndexBook));
+                }
+            }
+            return View(book);
+
         }
     }
 }

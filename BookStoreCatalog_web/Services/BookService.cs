@@ -23,7 +23,7 @@ namespace BookStoreCatalog_web.Services
             {
                 APIType = ClassDefinitions.APIType.POST,
                 Data = bookDTO,
-                URL = _bookURL+"/api/Book"
+                URL = _bookURL+ "/api/Book/DbAPIResponse"
             });
         }
 
@@ -32,7 +32,7 @@ namespace BookStoreCatalog_web.Services
             return SendAsync<T>(new APIRequest()
             {
                 APIType = ClassDefinitions.APIType.DELETE,
-                URL = _bookURL + "/api/Book/" + id
+                URL = _bookURL + "/api/Book/DbAPIResponse/" + id
             });
         }
 
@@ -41,7 +41,7 @@ namespace BookStoreCatalog_web.Services
             return SendAsync<T>(new APIRequest()
             {
                 APIType = ClassDefinitions.APIType.GET,
-                URL = _bookURL + "/api/Book/"+id
+                URL = _bookURL + "/api/Book/DbAPIResponse/" + id
             });
         }
 
@@ -60,7 +60,7 @@ namespace BookStoreCatalog_web.Services
             {
                 APIType = ClassDefinitions.APIType.PUT,
                 Data = bookDTO,
-                URL = _bookURL + "/api/Book/"+bookDTO.Id
+                URL = _bookURL + "/api/Book/DbAPIResponse/" + bookDTO.Id
             });
         }
     }

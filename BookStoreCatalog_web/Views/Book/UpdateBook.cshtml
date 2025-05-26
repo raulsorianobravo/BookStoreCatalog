@@ -1,15 +1,19 @@
-﻿@model BookStoreCatalog_web.Models.DTO.BookModelCreateDTO
+﻿@model BookStoreCatalog_web.Models.DTO.BookModelUpdateDTO
+
 @{
-    ViewData["Title"] = "CreateNewBook";
+    ViewData["Title"] = "UpdateBook";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<h1>UpdateBook</h1>
+<form method="post" asp-action="UpdateBook">
 
-<h1>CreateNewBook</h1>
-<form method="post" asp-action="CreateNewBook">
     <div class="container border-3 p-3">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        
+        <input hidden asp-for="Id" />
+        
         <div class="row">
-            <h2 class="text-info"> Crete New Book</h2>
+            <h2 class="text-info"> Update a Book</h2>
         </div>
 
         <div class="row mt-2">
@@ -63,7 +67,7 @@
             </div>
         </div>
         <div class="d-grid gap-2 d-md-block mt-2">
-            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="submit" class="btn btn-primary">Update</button>
             <a asp-controller="Book" asp-action="IndexBook" class="btn btn-success"> Back</a>
         </div>
 
@@ -74,4 +78,3 @@
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />
 }
-
