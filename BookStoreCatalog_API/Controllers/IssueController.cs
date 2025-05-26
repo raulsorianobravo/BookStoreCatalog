@@ -94,7 +94,7 @@ namespace BookStoreCatalog_API.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns>the book that match with the ID passed </returns>
-        [HttpGet("DbAPIResponse/{id}:int", Name = "GetIssueDbAPIResponse")]
+        [HttpGet("DbAPIResponse/{id:int}", Name = "GetIssueDbAPIResponse")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -229,7 +229,7 @@ namespace BookStoreCatalog_API.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns>The result of the operation</returns>
-        [HttpDelete("DbAPIResponse/{id}:int")]
+        [HttpDelete("DbAPIResponse/{id:int}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -265,7 +265,7 @@ namespace BookStoreCatalog_API.Controllers
         /// <param name="id"></param>
         /// <param name="modBook"></param>
         /// <returns>The result of the operation</returns>
-        [HttpPut("DbAPIResponse/{id}:int")]
+        [HttpPut("DbAPIResponse/{id:int}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -308,7 +308,7 @@ namespace BookStoreCatalog_API.Controllers
         }
 
         //----------------------------------------------
-        [HttpPatch("DbAPIResponse/{id}:int")]
+        [HttpPatch("DbAPIResponse/{id:int}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
