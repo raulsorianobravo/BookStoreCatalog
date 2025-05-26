@@ -1786,6 +1786,7 @@ namespace BookStoreCatalog_API.Controllers
             await _bookRepo.Create(bookTemp);
             _response.Result = bookTemp;
             _response.StatusCode = HttpStatusCode.Created;
+            _response.IsSuccess = true;
             //await _dbContext.SaveChangesAsync();
 
             return CreatedAtRoute("GetBookDb", new { id = bookTemp.Id }, _response);
@@ -1870,7 +1871,7 @@ namespace BookStoreCatalog_API.Controllers
 
             await _bookRepo.UpdateBook(book);
             _response.StatusCode = HttpStatusCode.NoContent;
-
+            _response.IsSuccess=true;
 
             return Ok(_response);
         }
