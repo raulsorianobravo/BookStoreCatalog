@@ -87,5 +87,33 @@ namespace BookStoreCatalog_web.Controllers
             return View(book);
 
         }
+
+        public async Task<IActionResult> DeleteBook(int Id)
+        {
+            var response = await _bookService.GetBook<APIResponse>(Id);
+
+            if (response != null && response.IsSuccess)
+            {
+                BookModelDTO bookDTO = JsonConvert.DeserializeObject<BookModelDTO>(Convert.ToString(response.Result));
+                return View(bookDTO);
+            }
+            return NotFound();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteBook(BookModelDTO book)
+        {
+
+            var response = await _bookService.DeleteBook<APIResponse>(book.Id);
+
+            if (response != null && response.IsSuccess)
+            {
+                return RedirectToAction(nameof(IndexBook));
+            }
+            
+            return View(book);
+
+        }
     }
 }
