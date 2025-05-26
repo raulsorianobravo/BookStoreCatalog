@@ -13,7 +13,7 @@ namespace BookStoreCatalog_web.Services
         public IssueService(IHttpClientFactory httpClient, IConfiguration configuration) : base(httpClient)
         {
             _httpClient = httpClient;
-            _issueURL = configuration.GetValue<string>("ServiceURL:API_URL");
+            _issueURL = configuration.GetValue<string>("ServiceURLs:API_URL");
         }
 
         public Task<T> CreateIssue<T>(IssueModelCreateDTO issueDTO)
