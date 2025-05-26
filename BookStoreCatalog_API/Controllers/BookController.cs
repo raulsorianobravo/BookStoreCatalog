@@ -1823,6 +1823,7 @@ namespace BookStoreCatalog_API.Controllers
                 await _bookRepo.Remove(book);
                 //await _dbContext.SaveChangesAsync();
                 _response.StatusCode=HttpStatusCode.NoContent;
+                _response.IsSuccess = true;
             }
             return Ok(_response);
         }
