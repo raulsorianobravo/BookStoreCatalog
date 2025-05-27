@@ -1,6 +1,7 @@
 ﻿using BookStoreCatalog_web.Models;
 using BookStoreCatalog_web.Services.IServices;
 using Newtonsoft.Json;
+using System.Net;
 using System.Text;
 
 namespace BookStoreCatalog_web.Services
@@ -54,8 +55,27 @@ namespace BookStoreCatalog_web.Services
                 apiResponse = await client.SendAsync(message);
                 var apiContent = await apiResponse.Content.ReadAsStringAsync();
 
-                var APIResponse = JsonConvert.DeserializeObject<T>(apiContent);
+                //var APIResponse = JsonConvert.DeserializeObject<T>(apiContent);
 
+                try
+                {
+                    APIResponse response = JsonConvert.DeserializeObject<APIResponse>(apiContent);
+                    if (response.StatusCode == HttpStatusCode.BadRequest || apiResponse.StatusCode == HttpStatusCode.NotFound)
+                    {
+                        response.StatusCode = HttpStatusCode.BadRequest;
+                        response.IsSuccess = false;
+                        var res = JsonConvert.SerializeObject(response);
+                        var obj = JsonConvert.DeserializeObject<T>(res);
+                        return obj;
+                    }
+                }
+                catch (Exception)
+                {
+                    var errorResponse = JsonConvert.DeserializeObject<T>(apiContent);
+                    return errorResponse;
+                }
+
+                var APIResponse = JsonConvert.DeserializeObject<T>(apiContent);
                 return APIResponse;
             }
             catch (Exception ex)
@@ -66,8 +86,8 @@ namespace BookStoreCatalog_web.Services
                 dto.ErrorMessages.Add(Convert.ToString(ex.Message));
                 dto.IsSuccess = false;
                 var res = JsonConvert.SerializeObject(dto);
-                var APIResponse = JsonConvert.DeserializeObject<T>(res);
-                return APIResponse;
+                var apiResponse = JsonConvert.DeserializeObject<T>(res);
+                return apiResponse;
             }
 
 
