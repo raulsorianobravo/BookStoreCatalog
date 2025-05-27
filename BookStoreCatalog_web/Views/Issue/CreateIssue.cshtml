@@ -46,6 +46,14 @@
 
             </div>
         </div>
+        <div class="row mt-2">
+            <div class="col-md-6">
+                <label class="form-label">Extra</label>
+                <textarea asp-for="Issue.extraInfo" class="form-control"></textarea>
+                <span asp-validation-for="Issue.extraInfo" class="text-danger"></span>
+
+            </div>
+        </div>
 
         <div class="d-grid gap-2 d-md-block mt-2">
             <button type="submit" class="btn btn-primary">Save</button>

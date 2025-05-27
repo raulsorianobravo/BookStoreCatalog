@@ -219,6 +219,7 @@ namespace BookStoreCatalog_API.Controllers
             await _issueRepo.Create(bookTemp);
             _response.Result = bookTemp;
             _response.StatusCode = HttpStatusCode.Created;
+            _response.IsSuccess = true;
             //await _dbContext.SaveChangesAsync();
 
             return CreatedAtRoute("GetIssueDbAPIResponse", new { id = bookTemp.IssueId }, _response);

@@ -60,5 +60,40 @@ namespace BookStoreCatalog_web.Controllers
             
             return View(issueViewModel);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateIssue(IssueViewModel issueViewModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                var response = await _issueService.CreateIssue<APIResponse>(issueViewModel.Issue);
+                if (response != null && response.IsSuccess)
+                {
+                    return RedirectToAction(nameof(IndexIssue));
+                }
+                else
+                {
+                    if(response.ErrorMessages.Count>0)
+                    {
+                        ModelState.AddModelError("ErrorMessage",response.ErrorMessages.FirstOrDefault());
+                    }
+                }
+                
+            }
+            var res = await _bookService.GetAllBooks<APIResponse>();
+
+            if (res != null && res.IsSuccess)
+            {
+                issueViewModel.BookList = JsonConvert.DeserializeObject<List<BookModelDTO>>(Convert.ToString(res.Result))
+                    .Select(v => new SelectListItem
+                    {
+                        Text = v.Title,
+                        Value = v.Id.ToString()
+                    });
+            }
+
+            return View(issueViewModel);
+        }
     }
 }
