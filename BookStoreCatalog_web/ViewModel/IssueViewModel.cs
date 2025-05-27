@@ -5,12 +5,12 @@ namespace BookStoreCatalog_web.ViewModel
 {
     public class IssueViewModel
     {
-        public IssueModelDTO Issue { get; set; }
+        public IssueModelCreateDTO Issue { get; set; }
         public IEnumerable<SelectListItem> BookList { get; set; }
 
         public IssueViewModel()
         {
-            Issue = new IssueModelDTO();
+            Issue = new IssueModelCreateDTO();
         }
     }
 }
