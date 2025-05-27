@@ -182,14 +182,14 @@ namespace BookStoreCatalog_API.Controllers
 
                     if (await _issueRepo.GetBook(book => book.IssueName.ToLower() == newBook.IssueName.ToLower()) != null)
                     {
-                        ModelState.AddModelError("SameBook", "This Book Exists, don't insist");
+                        ModelState.AddModelError("ErrorMessage", "This Book Exists, don't insist");
                         _logger.LogError("Error:" + ModelState.ToList()[0].Value.Errors[0].ErrorMessage);
                         return BadRequest(ModelState);
                     }
 
                     if (await _bookRepo.GetBook(v => v.Id == newBook.BookId) == null)
                     {
-                        ModelState.AddModelError("Not Found", "Can't find this book");
+                        ModelState.AddModelError("ErrorMessage", "Can't find this book");
                         _logger.LogError("Error:" + ModelState.ToList()[0].Value.Errors[0].ErrorMessage);
                         return BadRequest(ModelState);
                     }

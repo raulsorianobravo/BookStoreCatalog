@@ -1757,7 +1757,7 @@ namespace BookStoreCatalog_API.Controllers
 
                     if (await _bookRepo.GetBook(book => book.Title.ToLower() == newBook.Title.ToLower()) != null)
                     {
-                        ModelState.AddModelError("SameBook", "This Book Exists, don't insist");
+                        ModelState.AddModelError("ErrorMessage", "This Book Exists, don't insist");
                         _logger.LogError("Error:" + ModelState.ToList()[0].Value.Errors[0].ErrorMessage);
                         return BadRequest(ModelState);
                     }
