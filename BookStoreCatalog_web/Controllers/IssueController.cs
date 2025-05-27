@@ -61,6 +61,11 @@ namespace BookStoreCatalog_web.Controllers
             return View(issueViewModel);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="issueViewModel"></param>
+        /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateIssue(IssueViewModel issueViewModel)
