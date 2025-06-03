@@ -162,5 +162,45 @@ namespace BookStoreCatalog_web.Controllers
 
             return View(issueViewModel);
         }
+
+        public async Task<IActionResult> DeleteIssue(int issueId)
+        {
+            IssueDeleteViewModel issueViewModel = new IssueDeleteViewModel();
+
+            var response = await _issueService.GetIssue<APIResponse>(issueId);
+            if (response != null && response.IsSuccess)
+            {
+                IssueModelDTO issue = JsonConvert.DeserializeObject<IssueModelDTO>(Convert.ToString(response.Result));
+                issueViewModel.Issue = issue;
+            }
+
+            response = await _bookService.GetAllBooks<APIResponse>();
+            if (response != null && response.IsSuccess)
+            {
+                issueViewModel.BookList = JsonConvert.DeserializeObject<List<BookModelDTO>>(Convert.ToString(response.Result))
+                    .Select(v => new SelectListItem
+                    {
+                        Text = v.Title,
+                        Value = v.Id.ToString()
+                    });
+
+                return View(issueViewModel);
+            }
+
+            return NotFound();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteIssue(IssueDeleteViewModel issueViewModel)
+        {
+            var response = await _issueService.DeleteIssue<APIResponse>(issueViewModel.Issue.issueId);
+            if (response != null && response.IsSuccess)
+            {
+                return RedirectToAction(nameof(IndexIssue));
+            }
+            return View(issueViewModel);
+        }
+
     }
 }
