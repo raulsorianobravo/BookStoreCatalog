@@ -255,6 +255,7 @@ namespace BookStoreCatalog_API.Controllers
             {
                 await _issueRepo.Remove(book);
                 //await _dbContext.SaveChangesAsync();
+                _response.IsSuccess = true;
                 _response.StatusCode = HttpStatusCode.NoContent;
             }
             return Ok(_response);
