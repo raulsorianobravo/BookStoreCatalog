@@ -303,6 +303,7 @@ namespace BookStoreCatalog_API.Controllers
             //await _dbContext.SaveChangesAsync();
 
             await _issueRepo.UpdateBook(book);
+            _response.IsSuccess = true;
             _response.StatusCode = HttpStatusCode.NoContent;
 
 
