@@ -1,0 +1,65 @@
+﻿@model BookStoreCatalog_web.ViewModel.IssueUpdateViewModel
+@{
+    ViewData["Title"] = "UpdateIssue";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>UpdateIssue</h1>
+<form method="post" asp-action="UpdateIssue">
+    <div class="container border p-3">
+        <div asp-validation-summary="All" class="text-danger"></div>
+
+        <input asp-for="Issue.IssueNumber" hidden/>
+
+        <div class="row">
+            <h2 class="text-info">Update an Issue</h2>
+        </div>
+        <div class="row mt-2">
+            <div class="col-md-6">
+                <label class="form-label">IssueNumber</label>
+                <input asp-for="Issue.IssueNumber" disabled class="form-control" />
+                <span asp-validation-for="Issue.IssueNumber" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-md-6">
+                <label class="form-label">Issue</label>
+                <input asp-for="Issue.IssueName" class="form-control" />
+                <span asp-validation-for="Issue.IssueName" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row mt-2">
+            <div class="col-md-6">
+                <label class="form-label">Book</label>
+                <select asp-for="Issue.BookId" class="form-select" asp-items="@Model.BookList">
+                    <option value="">-- Select a book --</option>
+                </select>
+                <span asp-validation-for="Issue.BookId" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row mt-2">
+            <div class="col-md-6">
+                <label class="form-label">Desccription</label>
+                <textarea asp-for="Issue.IssueDescription" class="form-control"></textarea>
+                <span asp-validation-for="Issue.IssueDescription" class="text-danger"></span>
+
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-md-6">
+                <label class="form-label">Extra</label>
+                <textarea asp-for="Issue.extraInfo" class="form-control"></textarea>
+                <span asp-validation-for="Issue.extraInfo" class="text-danger"></span>
+
+            </div>
+        </div>
+
+        <div class="d-grid gap-2 d-md-block mt-2">
+            <button type="submit" class="btn btn-primary">Update</button>
+            <a asp-controller="Issue" asp-action="IndexIssue" class="btn btn-success">Back</a>
+        </div>
+
+    </div>
+</form>

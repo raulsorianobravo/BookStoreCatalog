@@ -100,5 +100,41 @@ namespace BookStoreCatalog_web.Controllers
 
             return View(issueViewModel);
         }
+
+        public async Task<IActionResult> UpdateIssue(int issueId)
+        {
+            IssueUpdateViewModel issueViewModel = new IssueUpdateViewModel();
+
+            var response = await _issueService.GetIssue<APIResponse>(issueId);
+            if (response != null && response.IsSuccess)
+            {
+                IssueModelDTO issue = JsonConvert.DeserializeObject<IssueModelDTO>(Convert.ToString(response.Result));
+                issueViewModel.Issue = _mapper.Map<IsssueModelUpdateDTO>(issue);
+            }
+
+            response = await _bookService.GetAllBooks<APIResponse>();
+            if (response != null && response.IsSuccess)
+            {
+                issueViewModel.BookList = JsonConvert.DeserializeObject<List<BookModelDTO>>(Convert.ToString(response.Result))
+                    .Select(v => new SelectListItem
+                    {
+                        Text = v.Title,
+                        Value = v.Id.ToString()
+                    });
+
+                return View(issueViewModel);
+            }
+
+            return NotFound();
+        }
+
+        //public async Task<IActionResult> UpdateIssue(int issueId)
+        //{
+        //    var response = await _issueService.GetIssue<APIResponse>(issueId);
+        //    if (response != null && response.IsSuccess)
+        //    {
+        //        Iss
+        //    }
+        //}
     }
 }
