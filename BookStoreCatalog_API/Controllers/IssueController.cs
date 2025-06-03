@@ -113,7 +113,7 @@ namespace BookStoreCatalog_API.Controllers
 
             try
             {
-                book = await _issueRepo.GetBook(book => book.IssueId == id, includeProperties:"BookModel");
+                book = await _issueRepo.GetBook(book => book.IssueId == id, includeProperties:"Book");
                 if (book != null)
                 {
                     _logger.LogInformation("Sucessful:" + $"{book.IssueName}");
