@@ -2,15 +2,22 @@
 using BookStoreCatalog_API.Models;
 using BookStoreCatalog_API.Models.DTO;
 using BookStoreCatalog_API.Repository.IRepository;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace BookStoreCatalog_API.Repository
 {
     public class UserModelRepo : IUserRepo
     {
         private readonly ApplicationDbContext _context;
-        public UserModelRepo(ApplicationDbContext context)
+        private string secretKey;
+        public UserModelRepo(ApplicationDbContext context,IConfiguration configuration)
         {
             _context = context;
+            secretKey = configuration.GetValue<string>("ApiSettings:Secret");
         }
 
         public bool IsUserUnique(string username)
@@ -23,9 +30,39 @@ namespace BookStoreCatalog_API.Repository
             return false;
         }
 
-        public Task<LoginResponseDTO> Login(LoginRequestDTO loginRequestDTO)
+        public async Task<LoginResponseDTO> Login(LoginRequestDTO loginRequestDTO)
         {
-            throw new NotImplementedException();
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Username.ToLower() == loginRequestDTO.UserName.ToLower()
+                && x.Password == loginRequestDTO.Password);
+            if (user == null)
+            {
+                return new LoginResponseDTO()
+                {
+                    Token = "",
+                    User = null
+                };
+            }
+            //JsonWebToken
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(secretKey);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.Name, user.Id.ToString()),
+                    new Claim(ClaimTypes.Role, user.Role)
+                }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            LoginResponseDTO newloginResponseDTO = new LoginResponseDTO();
+            newloginResponseDTO.Token = tokenHandler.WriteToken(token);
+            newloginResponseDTO.User = user;
+
+            return newloginResponseDTO;
+            
         }
 
         public async Task<UserModel> Register(RegisterRequestDTO registerRequestDTO)
