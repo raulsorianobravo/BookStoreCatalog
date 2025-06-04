@@ -50,6 +50,7 @@ namespace BookStoreCatalog_web.Controllers
                 var response = await _bookService.CreateBook<APIResponse>(book);
                 if (response != null && response.IsSuccess)
                 {
+                    TempData["Success"] = "Book Saved";
                     return RedirectToAction(nameof(IndexBook));
                 }
             }
@@ -81,6 +82,7 @@ namespace BookStoreCatalog_web.Controllers
 
                 if(response != null && response.IsSuccess)
                 {
+                    TempData["Success"] = "Book Updated";
                     return RedirectToAction(nameof(IndexBook));
                 }
             }
@@ -109,9 +111,10 @@ namespace BookStoreCatalog_web.Controllers
 
             if (response != null && response.IsSuccess)
             {
+                TempData["Success"] = "Book Deleted";
                 return RedirectToAction(nameof(IndexBook));
             }
-            
+            TempData["Error"] = "Something goes wrong";
             return View(book);
 
         }

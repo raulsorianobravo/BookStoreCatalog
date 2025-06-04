@@ -75,6 +75,7 @@ namespace BookStoreCatalog_web.Controllers
                 var response = await _issueService.CreateIssue<APIResponse>(issueViewModel.Issue);
                 if (response != null && response.IsSuccess)
                 {
+                    TempData["Success"] = "Issue Saved";
                     return RedirectToAction(nameof(IndexIssue));
                 }
                 else
@@ -137,6 +138,7 @@ namespace BookStoreCatalog_web.Controllers
                 var response = await _issueService.UpdateIssue<APIResponse>(issueViewModel.Issue);
                 if (response != null && response.IsSuccess)
                 {
+                    TempData["Success"] = "Book Updated";
                     return RedirectToAction(nameof(IndexIssue));
                 }
                 else
@@ -197,6 +199,7 @@ namespace BookStoreCatalog_web.Controllers
             var response = await _issueService.DeleteIssue<APIResponse>(issueViewModel.Issue.issueId);
             if (response != null && response.IsSuccess)
             {
+                TempData["Success"] = "Book Deleted";
                 return RedirectToAction(nameof(IndexIssue));
             }
             return View(issueViewModel);
