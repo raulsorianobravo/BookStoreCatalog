@@ -28,6 +28,8 @@ builder.Services.AddScoped<IBookRepo, BookModelRepo>();
 
 builder.Services.AddScoped<IIssueRepo, IssueModelRepo>();
 
+builder.Services.AddScoped<IUserRepo, UserModelRepo>();
+
 
 var app = builder.Build();
 
