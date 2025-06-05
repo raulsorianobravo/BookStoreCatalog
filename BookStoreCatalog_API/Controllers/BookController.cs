@@ -4,6 +4,7 @@ using BookStoreCatalog_API.DataStore;
 using BookStoreCatalog_API.Models;
 using BookStoreCatalog_API.Models.DTO;
 using BookStoreCatalog_API.Repository.IRepository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -1633,6 +1634,7 @@ namespace BookStoreCatalog_API.Controllers
         /// </summary>
         /// <returns> A fake list of Books </returns>
         [HttpGet("DbAPIResponse/")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<APIResponse>> GetAllDbAPIResponse()
         {
@@ -1671,6 +1673,7 @@ namespace BookStoreCatalog_API.Controllers
         /// <param name="id"></param>
         /// <returns>the book that match with the ID passed </returns>
         [HttpGet("DbAPIResponse/{id:int}", Name = "GetBookDbAPIResponse")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -1720,6 +1723,7 @@ namespace BookStoreCatalog_API.Controllers
         /// <param name="newBook"></param>
         /// <returns>The result of the operation</returns>
         [HttpPost("DbAPIResponse/")]
+        [Authorize(Roles ="admin")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -1799,6 +1803,7 @@ namespace BookStoreCatalog_API.Controllers
         /// <param name="id"></param>
         /// <returns>The result of the operation</returns>
         [HttpDelete("DbAPIResponse/{id:int}")]
+        [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -1836,6 +1841,7 @@ namespace BookStoreCatalog_API.Controllers
         /// <param name="modBook"></param>
         /// <returns>The result of the operation</returns>
         [HttpPut("DbAPIResponse/{id:int}")]
+        [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -1879,6 +1885,7 @@ namespace BookStoreCatalog_API.Controllers
 
         //----------------------------------------------
         [HttpPatch("DbAPIResponse/{id:int}")]
+        [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
