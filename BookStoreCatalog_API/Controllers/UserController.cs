@@ -40,7 +40,31 @@ namespace BookStoreCatalog_API.Controllers
         [HttpPost("register")]  //api/user/login
         public async Task<IActionResult> Register([FromBody] RegisterRequestDTO userDTO)
         {
-            return null;
+            bool userUnique = _userRepo.IsUserUnique(userDTO.Username);
+
+            if(!userUnique)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add("Username exists");
+                return BadRequest(_response);
+            }
+
+            var user = await _userRepo.Register(userDTO);
+            if (user == null)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add("Fail");
+                return BadRequest(_response);
+            }
+
+            _response.IsSuccess = true;
+            _response.StatusCode = HttpStatusCode.OK;
+            //_response.Result = loginResponse;
+            return Ok(_response);
+
+            ;
         }
     }
 }
