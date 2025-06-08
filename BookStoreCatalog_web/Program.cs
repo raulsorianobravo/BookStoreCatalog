@@ -15,6 +15,9 @@ builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddHttpClient<IIssueService, IssueService>();
 builder.Services.AddScoped<IIssueService, IssueService>();
 
+builder.Services.AddHttpClient<IUserService, UserService>();
+builder.Services.AddScoped<IUserService, UserService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
