@@ -110,6 +110,8 @@ builder.Services.AddApiVersioning(options =>
         options.SubstituteApiVersionInUrl = true;
     });
 
+builder.Services.AddResponseCaching();
+
 
 var app = builder.Build();
 
