@@ -10,7 +10,7 @@ namespace BookStoreCatalog_API.Controllers
 {
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
-    [ApiVersion("1.0")]
+    [ApiVersionNeutral]
     public class UserController : ControllerBase
     {
         private readonly IUserRepo _userRepo;
