@@ -1,6 +1,7 @@
 using BookStoreCatalog_web;
 using BookStoreCatalog_web.Services;
 using BookStoreCatalog_web.Services.IServices;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +28,17 @@ builder.Services.AddSession(options => {
 
 builder.Services.AddSingleton<IHttpContextAccessor,HttpContextAccessor>();
 
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.Cookie.HttpOnly = true;
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(100);
+        options.LoginPath= "/User/Login";
+        options.AccessDeniedPath = "/User/Forbidden";
+        options.SlidingExpiration = true;
+    });
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -42,9 +54,12 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.UseSession();
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
