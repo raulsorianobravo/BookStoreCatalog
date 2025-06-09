@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using BookStoreCatalog_API;
 using BookStoreCatalog_API.Data;
 using BookStoreCatalog_API.Repository;
@@ -85,6 +86,11 @@ builder.Services.AddScoped<IIssueRepo, IssueModelRepo>();
 
 builder.Services.AddScoped<IUserRepo, UserModelRepo>();
 
+builder.Services.AddApiVersioning(options =>
+    {
+        options.AssumeDefaultVersionWhenUnspecified = true;
+        options.DefaultApiVersion = new ApiVersion(1, 0);
+    });
 
 var app = builder.Build();
 
