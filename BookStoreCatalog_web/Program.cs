@@ -18,6 +18,13 @@ builder.Services.AddScoped<IIssueService, IssueService>();
 builder.Services.AddHttpClient<IUserService, UserService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options => {
+    options.IdleTimeout = TimeSpan.FromMinutes(100);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    });
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
