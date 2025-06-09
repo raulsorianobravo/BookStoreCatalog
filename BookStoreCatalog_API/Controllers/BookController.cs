@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Asp.Versioning;
+using AutoMapper;
 using BookStoreCatalog_API.Data;
 using BookStoreCatalog_API.DataStore;
 using BookStoreCatalog_API.Models;
@@ -13,8 +14,9 @@ using System.Net;
 
 namespace BookStoreCatalog_API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
+    [ApiVersion("1.0")]
     public class BookController : ControllerBase
     {
         //----------------------------------------------

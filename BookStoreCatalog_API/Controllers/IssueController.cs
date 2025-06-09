@@ -8,11 +8,14 @@ using System.Net;
 using AutoMapper;
 using BookStoreCatalog_API.Data;
 using Microsoft.AspNetCore.JsonPatch;
+using Asp.Versioning;
 
 namespace BookStoreCatalog_API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
+    [ApiVersion("1.0")]
+    [ApiVersion("2.0")]
     public class IssueController : ControllerBase
     {
         //----------------------------------------------
@@ -60,6 +63,7 @@ namespace BookStoreCatalog_API.Controllers
         /// Get all the Books
         /// </summary>
         /// <returns> A fake list of Books </returns>
+        [MapToApiVersion("1.0")]
         [HttpGet("DbAPIResponse/")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<APIResponse>> GetAllDbAPIResponse()
@@ -69,6 +73,36 @@ namespace BookStoreCatalog_API.Controllers
                 _logger.LogInformation("Get all the books");
 
                 IEnumerable<IssueModel> issueList = await _issueRepo.GetAll(includeProperties:"Book");
+
+                _response.Result = _mapper.Map<IEnumerable<IssueModelDTO>>(issueList);
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.IsSuccess = true;
+
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string>()
+                {
+                    ex.Message
+                };
+
+                return _response;
+            }
+        }
+
+        [MapToApiVersion("2.0")]
+        [HttpGet("DbAPIResponse/")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<APIResponse>> GetAllDbAPIResponse2()
+        {
+            try
+            {
+                _logger.LogInformation("Get all the books");
+
+                IEnumerable<IssueModel> issueList = await _issueRepo.GetAll(includeProperties: "Book");
 
                 _response.Result = _mapper.Map<IEnumerable<IssueModelDTO>>(issueList);
                 _response.StatusCode = HttpStatusCode.OK;

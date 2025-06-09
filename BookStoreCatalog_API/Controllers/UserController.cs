@@ -1,4 +1,5 @@
-﻿using BookStoreCatalog_API.Models;
+﻿using Asp.Versioning;
+using BookStoreCatalog_API.Models;
 using BookStoreCatalog_API.Models.DTO;
 using BookStoreCatalog_API.Repository.IRepository;
 using Microsoft.AspNetCore.Http;
@@ -7,8 +8,9 @@ using System.Net;
 
 namespace BookStoreCatalog_API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
+    [ApiVersion("1.0")]
     public class UserController : ControllerBase
     {
         private readonly IUserRepo _userRepo;
