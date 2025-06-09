@@ -4,11 +4,11 @@ namespace BookStoreCatalog_web.Services.IServices
 {
     public interface IIssueService
     {
-        Task<T> GetAllIssues<T>();
-        Task<T> GetIssue<T>(int id);
+        Task<T> GetAllIssues<T>(string token);
+        Task<T> GetIssue<T>(int id, string token);
 
-        Task<T> CreateIssue<T>(IssueModelCreateDTO issueDTO);
-        Task<T> UpdateIssue<T>(IsssueModelUpdateDTO issueDTO);
-        Task<T> DeleteIssue<T>(int id);
+        Task<T> CreateIssue<T>(IssueModelCreateDTO issueDTO, string token);
+        Task<T> UpdateIssue<T>(IsssueModelUpdateDTO issueDTO, string token);
+        Task<T> DeleteIssue<T>(int id, string token);
     }
 }

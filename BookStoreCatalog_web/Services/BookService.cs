@@ -17,50 +17,55 @@ namespace BookStoreCatalog_web.Services
             _bookURL = configuration.GetValue<string>("ServiceURLs:API_URL");
         }
 
-        public Task<T> CreateBook<T>(BookModelCreateDTO bookDTO)
+        public Task<T> CreateBook<T>(BookModelCreateDTO bookDTO, string token)
         {
             return SendAsync<T>(new APIRequest()
             {
                 APIType = ClassDefinitions.APIType.POST,
                 Data = bookDTO,
-                URL = _bookURL+ "/api/Book/DbAPIResponse"
+                URL = _bookURL+ "/api/Book/DbAPIResponse",
+                Token = token
             });
         }
 
-        public Task<T> DeleteBook<T>(int id)
+        public Task<T> DeleteBook<T>(int id, string token)
         {
             return SendAsync<T>(new APIRequest()
             {
                 APIType = ClassDefinitions.APIType.DELETE,
-                URL = _bookURL + "/api/Book/DbAPIResponse/" + id
+                URL = _bookURL + "/api/Book/DbAPIResponse/" + id,
+                Token = token
             });
         }
 
-        public Task<T> GetBook<T>(int id)
+        public Task<T> GetBook<T>(int id, string token)
         {
             return SendAsync<T>(new APIRequest()
             {
                 APIType = ClassDefinitions.APIType.GET,
-                URL = _bookURL + "/api/Book/DbAPIResponse/" + id
+                URL = _bookURL + "/api/Book/DbAPIResponse/" + id,
+                Token = token
             });
         }
 
-        public Task<T> GetAllBooks<T>()
+        public Task<T> GetAllBooks<T>(string token)
         {
             return SendAsync<T>(new APIRequest()
             {
                 APIType = ClassDefinitions.APIType.GET,
-                URL = _bookURL + "/api/Book/DbAPIResponse"
+                URL = _bookURL + "/api/Book/DbAPIResponse",
+                Token = token
             });
         }
 
-        public Task<T> UpdateBook<T>(BookModelUpdateDTO bookDTO)
+        public Task<T> UpdateBook<T>(BookModelUpdateDTO bookDTO, string token)
         {
             return SendAsync<T>(new APIRequest()
             {
                 APIType = ClassDefinitions.APIType.PUT,
                 Data = bookDTO,
-                URL = _bookURL + "/api/Book/DbAPIResponse/" + bookDTO.Id
+                URL = _bookURL + "/api/Book/DbAPIResponse/" + bookDTO.Id,
+                Token = token
             });
         }
     }

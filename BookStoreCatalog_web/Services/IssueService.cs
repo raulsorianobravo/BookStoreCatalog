@@ -16,50 +16,55 @@ namespace BookStoreCatalog_web.Services
             _issueURL = configuration.GetValue<string>("ServiceURLs:API_URL");
         }
 
-        public Task<T> CreateIssue<T>(IssueModelCreateDTO issueDTO)
+        public Task<T> CreateIssue<T>(IssueModelCreateDTO issueDTO, string token)
         {
             return SendAsync<T>(new APIRequest()
             {
                 APIType = ClassDefinitions.APIType.POST,
                 Data = issueDTO,
-                URL = _issueURL + "/api/Issue/DbAPIResponse"
+                URL = _issueURL + "/api/Issue/DbAPIResponse",
+                Token = token
             });
         }
 
-        public Task<T> DeleteIssue<T>(int id)
+        public Task<T> DeleteIssue<T>(int id, string token)
         {
             return SendAsync<T>(new APIRequest()
             {
                 APIType = ClassDefinitions.APIType.DELETE,
-                URL = _issueURL + "/api/Issue/DbAPIResponse/" + id
+                URL = _issueURL + "/api/Issue/DbAPIResponse/" + id,
+                Token = token
             });
         }
 
-        public Task<T> GetAllIssues<T>()
+        public Task<T> GetAllIssues<T>(string token)
         {
             return SendAsync<T>(new APIRequest() 
             { 
                 APIType = ClassDefinitions.APIType.GET,
-                URL = _issueURL + "/api/Issue/DbAPIResponse/"
+                URL = _issueURL + "/api/Issue/DbAPIResponse/",
+                Token = token
             });
         }
 
-        public Task<T> GetIssue<T>(int id)
+        public Task<T> GetIssue<T>(int id, string token)
         {
             return SendAsync<T>(new APIRequest()
             {
                 APIType = ClassDefinitions.APIType.GET,
-                URL = _issueURL + "/api/Issue/DbAPIResponse/" + id
+                URL = _issueURL + "/api/Issue/DbAPIResponse/" + id,
+                Token = token
             });
         }
 
-        public Task<T> UpdateIssue<T>(IsssueModelUpdateDTO issueDTO)
+        public Task<T> UpdateIssue<T>(IsssueModelUpdateDTO issueDTO, string token)
         {
             return SendAsync<T>(new APIRequest()
             {
                 APIType = ClassDefinitions.APIType.PUT,
                 Data = issueDTO,
-                URL = _issueURL + "/api/Issue/DbAPIResponse/" + issueDTO.IssueId
+                URL = _issueURL + "/api/Issue/DbAPIResponse/" + issueDTO.IssueId,
+                Token = token
             });
         }
     }
