@@ -23,7 +23,7 @@ namespace BookStoreCatalog_web.Services
             {
                 APIType = ClassDefinitions.APIType.POST,
                 Data = userDTO,
-                URL = _userURL + "/api/user/login"
+                URL = _userURL + "/api/v1/user/login"
             });
         }
 
@@ -33,7 +33,7 @@ namespace BookStoreCatalog_web.Services
             {
                 APIType = ClassDefinitions.APIType.POST,
                 Data = userDTO,
-                URL = _userURL + "/api/user/register"
+                URL = _userURL + "/api/v1/user/register"
             });
         }
     }

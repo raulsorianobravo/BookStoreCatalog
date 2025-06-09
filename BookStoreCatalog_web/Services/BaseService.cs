@@ -66,7 +66,8 @@ namespace BookStoreCatalog_web.Services
                 try
                 {
                     APIResponse response = JsonConvert.DeserializeObject<APIResponse>(apiContent);
-                    if (response.StatusCode == HttpStatusCode.BadRequest || apiResponse.StatusCode == HttpStatusCode.NotFound)
+                    if (response !=null && (response.StatusCode == HttpStatusCode.BadRequest 
+                                        || apiResponse.StatusCode == HttpStatusCode.NotFound))
                     {
                         response.StatusCode = HttpStatusCode.BadRequest;
                         response.IsSuccess = false;
