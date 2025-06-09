@@ -1634,7 +1634,7 @@ namespace BookStoreCatalog_API.Controllers
         /// </summary>
         /// <returns> A fake list of Books </returns>
         [HttpGet("DbAPIResponse/")]
-        //[Authorize]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<APIResponse>> GetAllDbAPIResponse()
         {
