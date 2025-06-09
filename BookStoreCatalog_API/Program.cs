@@ -45,6 +45,19 @@ builder.Services.AddSwaggerGen(options => {
             new List<string>()
         }
     });
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "BookStore v1",
+        Description = "Book Store version 1",
+    });
+    options.SwaggerDoc("v2", new OpenApiInfo
+    {
+        Version = "v2",
+        Title = "BookStore v2",
+        Description = "Book Store version 2",
+    });
+
 });
 //---
 
@@ -104,7 +117,14 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json","BookStore_v1");
+        options.SwaggerEndpoint("/swagger/v2/swagger.json","BookStore_v2");
+    });
+    //--- Important Options before the generic 
     app.UseSwaggerUI();
+
 }
 app.UseCors(builder => builder
      .AllowAnyOrigin()
