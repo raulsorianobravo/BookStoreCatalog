@@ -1,7 +1,10 @@
 ﻿using BookStoreCatalog_web.Models;
 using BookStoreCatalog_web.Models.DTO;
 using BookStoreCatalog_web.Services.IServices;
+using BookStoreCatalogUtils;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace BookStoreCatalog_web.Controllers
 {
@@ -25,14 +28,27 @@ namespace BookStoreCatalog_web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Login(LoginRequestDTO userDTO) 
-        { 
-            return View(); 
+        public async Task<IActionResult> Login(LoginRequestDTO userDTO) 
+        {
+            var response = await _userService.Login<APIResponse>(userDTO);
+            if (response != null && response.IsSuccess == true)
+            {
+                LoginResponseDTO loginResponse = JsonConvert.DeserializeObject<LoginResponseDTO>(Convert.ToString(response.Result));
+                HttpContext.Session.SetString(ClassDefinitions.SessionToken, loginResponse.Token);
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                ModelState.AddModelError("Error Messages", response.ErrorMessages.FirstOrDefault());
+                return View(userDTO);
+            }
         }
         
-        public IActionResult Logout() 
+        public async Task<IActionResult> Logout() 
         { 
-            return View(); 
+            await HttpContext.SignOutAsync();
+            HttpContext.Session.SetString(ClassDefinitions.SessionToken , "");
+            return View("Index", "Home"); 
         }
 
         public IActionResult Forbidden()
