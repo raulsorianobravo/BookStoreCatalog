@@ -2,6 +2,7 @@
 using BookStoreCatalog_web.Models;
 using BookStoreCatalog_web.Models.DTO;
 using BookStoreCatalog_web.Services.IServices;
+using BookStoreCatalogUtils;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -27,7 +28,7 @@ namespace BookStoreCatalog_web.Controllers
         {
             List<BookModelDTO> bookList = new List<BookModelDTO>();
 
-            var response = await _bookService.GetAllBooks<APIResponse>();
+            var response = await _bookService.GetAllBooks<APIResponse>(HttpContext.Session.GetString(ClassDefinitions.SessionToken));
             if (response != null && response.IsSuccess)
             {
                 bookList = JsonConvert.DeserializeObject<List<BookModelDTO>>(Convert.ToString(response.Result));
@@ -47,7 +48,7 @@ namespace BookStoreCatalog_web.Controllers
         {
             if (ModelState.IsValid) 
             {
-                var response = await _bookService.CreateBook<APIResponse>(book);
+                var response = await _bookService.CreateBook<APIResponse>(book, HttpContext.Session.GetString(ClassDefinitions.SessionToken));
                 if (response != null && response.IsSuccess)
                 {
                     TempData["Success"] = "Book Saved";
@@ -60,7 +61,7 @@ namespace BookStoreCatalog_web.Controllers
         
         public async Task<IActionResult> UpdateBook(int Id)
         {
-            var response = await _bookService.GetBook<APIResponse>(Id);
+            var response = await _bookService.GetBook<APIResponse>(Id, HttpContext.Session.GetString(ClassDefinitions.SessionToken));
 
             if (response != null && response.IsSuccess)
             {
@@ -78,7 +79,7 @@ namespace BookStoreCatalog_web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var response = await _bookService.UpdateBook<APIResponse>(book);
+                var response = await _bookService.UpdateBook<APIResponse>(book, HttpContext.Session.GetString(ClassDefinitions.SessionToken));
 
                 if(response != null && response.IsSuccess)
                 {
@@ -92,7 +93,7 @@ namespace BookStoreCatalog_web.Controllers
 
         public async Task<IActionResult> DeleteBook(int Id)
         {
-            var response = await _bookService.GetBook<APIResponse>(Id);
+            var response = await _bookService.GetBook<APIResponse>(Id, HttpContext.Session.GetString(ClassDefinitions.SessionToken));
 
             if (response != null && response.IsSuccess)
             {
@@ -107,7 +108,7 @@ namespace BookStoreCatalog_web.Controllers
         public async Task<IActionResult> DeleteBook(BookModelDTO book)
         {
 
-            var response = await _bookService.DeleteBook<APIResponse>(book.Id);
+            var response = await _bookService.DeleteBook<APIResponse>(book.Id, HttpContext.Session.GetString(ClassDefinitions.SessionToken));
 
             if (response != null && response.IsSuccess)
             {

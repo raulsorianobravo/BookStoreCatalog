@@ -4,6 +4,7 @@ using BookStoreCatalog_web.Models.DTO;
 using BookStoreCatalog_web.Services;
 using BookStoreCatalog_web.Services.IServices;
 using BookStoreCatalog_web.ViewModel;
+using BookStoreCatalogUtils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
@@ -33,7 +34,7 @@ namespace BookStoreCatalog_web.Controllers
         {
             List<IssueModelDTO> issueList = new List<IssueModelDTO>();
 
-            var response = await _issueService.GetAllIssues<APIResponse>();
+            var response = await _issueService.GetAllIssues<APIResponse>(HttpContext.Session.GetString(ClassDefinitions.SessionToken));
             if (response != null && response.IsSuccess)
             {
                 issueList = JsonConvert.DeserializeObject<List<IssueModelDTO>>(Convert.ToString(response.Result));
@@ -46,7 +47,7 @@ namespace BookStoreCatalog_web.Controllers
         {
             
             IssueViewModel issueViewModel = new IssueViewModel();
-            var response = await _bookService.GetAllBooks<APIResponse>();
+            var response = await _bookService.GetAllBooks<APIResponse>(HttpContext.Session.GetString(ClassDefinitions.SessionToken));
 
             if(response != null && response.IsSuccess)
             {
@@ -72,7 +73,7 @@ namespace BookStoreCatalog_web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var response = await _issueService.CreateIssue<APIResponse>(issueViewModel.Issue);
+                var response = await _issueService.CreateIssue<APIResponse>(issueViewModel.Issue, HttpContext.Session.GetString(ClassDefinitions.SessionToken));
                 if (response != null && response.IsSuccess)
                 {
                     TempData["Success"] = "Issue Saved";
@@ -87,7 +88,7 @@ namespace BookStoreCatalog_web.Controllers
                 }
                 
             }
-            var res = await _bookService.GetAllBooks<APIResponse>();
+            var res = await _bookService.GetAllBooks<APIResponse>(HttpContext.Session.GetString(ClassDefinitions.SessionToken));
 
             if (res != null && res.IsSuccess)
             {
@@ -106,14 +107,14 @@ namespace BookStoreCatalog_web.Controllers
         {
             IssueUpdateViewModel issueViewModel = new IssueUpdateViewModel();
 
-            var response = await _issueService.GetIssue<APIResponse>(issueId);
+            var response = await _issueService.GetIssue<APIResponse>(issueId, HttpContext.Session.GetString(ClassDefinitions.SessionToken));
             if (response != null && response.IsSuccess)
             {
                 IssueModelDTO issue = JsonConvert.DeserializeObject<IssueModelDTO>(Convert.ToString(response.Result));
                 issueViewModel.Issue = _mapper.Map<IsssueModelUpdateDTO>(issue);
             }
 
-            response = await _bookService.GetAllBooks<APIResponse>();
+            response = await _bookService.GetAllBooks<APIResponse>(HttpContext.Session.GetString(ClassDefinitions.SessionToken));
             if (response != null && response.IsSuccess)
             {
                 issueViewModel.BookList = JsonConvert.DeserializeObject<List<BookModelDTO>>(Convert.ToString(response.Result))
@@ -135,7 +136,7 @@ namespace BookStoreCatalog_web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var response = await _issueService.UpdateIssue<APIResponse>(issueViewModel.Issue);
+                var response = await _issueService.UpdateIssue<APIResponse>(issueViewModel.Issue, HttpContext.Session.GetString(ClassDefinitions.SessionToken));
                 if (response != null && response.IsSuccess)
                 {
                     TempData["Success"] = "Book Updated";
@@ -150,7 +151,7 @@ namespace BookStoreCatalog_web.Controllers
                 }
 
             }
-            var res = await _bookService.GetAllBooks<APIResponse>();
+            var res = await _bookService.GetAllBooks<APIResponse>(HttpContext.Session.GetString(ClassDefinitions.SessionToken));
 
             if (res != null && res.IsSuccess)
             {
@@ -169,14 +170,14 @@ namespace BookStoreCatalog_web.Controllers
         {
             IssueDeleteViewModel issueViewModel = new IssueDeleteViewModel();
 
-            var response = await _issueService.GetIssue<APIResponse>(issueId);
+            var response = await _issueService.GetIssue<APIResponse>(issueId, HttpContext.Session.GetString(ClassDefinitions.SessionToken));
             if (response != null && response.IsSuccess)
             {
                 IssueModelDTO issue = JsonConvert.DeserializeObject<IssueModelDTO>(Convert.ToString(response.Result));
                 issueViewModel.Issue = issue;
             }
 
-            response = await _bookService.GetAllBooks<APIResponse>();
+            response = await _bookService.GetAllBooks<APIResponse>(HttpContext.Session.GetString(ClassDefinitions.SessionToken));
             if (response != null && response.IsSuccess)
             {
                 issueViewModel.BookList = JsonConvert.DeserializeObject<List<BookModelDTO>>(Convert.ToString(response.Result))
@@ -196,7 +197,7 @@ namespace BookStoreCatalog_web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteIssue(IssueDeleteViewModel issueViewModel)
         {
-            var response = await _issueService.DeleteIssue<APIResponse>(issueViewModel.Issue.issueId);
+            var response = await _issueService.DeleteIssue<APIResponse>(issueViewModel.Issue.issueId, HttpContext.Session.GetString(ClassDefinitions.SessionToken));
             if (response != null && response.IsSuccess)
             {
                 TempData["Success"] = "Book Deleted";

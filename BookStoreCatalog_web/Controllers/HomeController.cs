@@ -2,6 +2,7 @@ using AutoMapper;
 using BookStoreCatalog_web.Models;
 using BookStoreCatalog_web.Models.DTO;
 using BookStoreCatalog_web.Services.IServices;
+using BookStoreCatalogUtils;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Diagnostics;
@@ -26,7 +27,7 @@ namespace BookStoreCatalog_web.Controllers
         {
             List<BookModelDTO> bookList = new List<BookModelDTO>();
 
-            var response = await _bookService.GetAllBooks<APIResponse>();
+            var response = await _bookService.GetAllBooks<APIResponse>(HttpContext.Session.GetString(ClassDefinitions.SessionToken));
 
             if (response != null && response.IsSuccess)
             {
