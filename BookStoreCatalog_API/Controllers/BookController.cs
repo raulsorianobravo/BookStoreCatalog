@@ -1636,7 +1636,7 @@ namespace BookStoreCatalog_API.Controllers
         /// </summary>
         /// <returns> A fake list of Books </returns>
         [HttpGet("DbAPIResponse/")]
-        [ResponseCache(Duration = 30)]
+        [ResponseCache(CacheProfileName = "Default10")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<APIResponse>> GetAllDbAPIResponse()
