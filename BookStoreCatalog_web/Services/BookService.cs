@@ -68,5 +68,16 @@ namespace BookStoreCatalog_web.Services
                 Token = token
             });
         }
+
+        public Task<T> GetAllBooksPaged<T>(string token, int pageNumber = 1, int pageSize = 4)
+        {
+            return SendAsync<T>(new APIRequest()
+            {
+                APIType = ClassDefinitions.APIType.GET,
+                URL = _bookURL + "/api/v1/Book/DbAPIResponsePaged/",
+                Token = token,
+                Parameters = new Parameters() { PageNumber = pageNumber, PageSize = pageSize }
+            });
+        }
     }
 }

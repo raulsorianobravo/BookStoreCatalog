@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Web;
 
 namespace BookStoreCatalog_web.Services
 {
@@ -26,7 +27,26 @@ namespace BookStoreCatalog_web.Services
                 var client = _httpClient.CreateClient("BookStoreClient");
                 HttpRequestMessage message = new HttpRequestMessage();
                 message.Headers.Add("Accept", "application/json");
-                message.RequestUri = new Uri(apiRequest.URL);
+
+                if (apiRequest.Parameters != null)
+                {
+                    var builder = new UriBuilder(apiRequest.URL);
+                    var query = HttpUtility.ParseQueryString(builder.Query);
+
+                    query["PageNumber"] = apiRequest.Parameters.PageNumber.ToString();
+                    query["PageSize"] = apiRequest.Parameters.PageSize.ToString();
+
+                    builder.Query = query.ToString();
+                    string url = builder.ToString();
+
+                    //--- api/Book/GetAllPaged/PageNumber=1&PageSize=4
+
+                    message.RequestUri = new Uri(url);
+                }
+                else
+                { 
+                    message.RequestUri = new Uri(apiRequest.URL); 
+                }
 
                 if (apiRequest.Data != null)
                 {

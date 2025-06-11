@@ -11,5 +11,8 @@ namespace BookStoreCatalog_web.Services.IServices
         Task<T> UpdateBook<T>(BookModelUpdateDTO bookDTO, string token);
         Task<T> DeleteBook<T>(int id, string token);
 
+
+        Task<T> GetAllBooksPaged<T>(string token, int pageNumber = 1, int pageSize = 4);
+
     }
 }
