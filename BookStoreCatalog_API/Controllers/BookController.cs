@@ -4,6 +4,7 @@ using BookStoreCatalog_API.Data;
 using BookStoreCatalog_API.DataStore;
 using BookStoreCatalog_API.Models;
 using BookStoreCatalog_API.Models.DTO;
+using BookStoreCatalog_API.Models.Settings;
 using BookStoreCatalog_API.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -1955,6 +1956,40 @@ namespace BookStoreCatalog_API.Controllers
             _response.StatusCode = HttpStatusCode.NoContent;
 
             return Ok(_response);
+        }
+
+        [HttpGet("DbAPIResponsePaged/")]
+        [ResponseCache(CacheProfileName = "Default10")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public ActionResult<APIResponse> GetAllDbAPIResponsePaged([FromQuery] Parameters parameters)
+        {
+            try
+            {
+                _logger.LogInformation("Get all the books");
+
+                var bookList = _bookRepo.GetAllPaged(parameters);
+
+                _response.Result = _mapper.Map<IEnumerable<BookModelDTO>>(bookList);
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.IsSuccess = true;
+                _response.TotalPages = bookList.MetaData.TotalPages;
+
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string>()
+                {
+                    ex.Message
+                };
+
+                return _response;
+
+            }
+
+
         }
     }
 }
