@@ -11,5 +11,13 @@ namespace BookStoreCatalog_web.Models
         public object Data { get; set; }
 
         public string Token { get; set; }
+
+        public Parameters Parameters { get; set; }
+    }
+
+    public class Parameters
+    {
+        public int PageNumber { get; set; }
+        public int PageSize { get; set; }
     }
 }
