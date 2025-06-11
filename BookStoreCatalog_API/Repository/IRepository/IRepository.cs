@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using BookStoreCatalog_API.Models.Settings;
+using System.Linq.Expressions;
 
 namespace BookStoreCatalog_API.Repository.IRepository
 {
@@ -12,6 +13,9 @@ namespace BookStoreCatalog_API.Repository.IRepository
 
         Task Remove(T entity);
 
-        Task Save();  
+        Task Save();
+
+        PagedList<T> GetAllPaged(Parameters parameters, Expression<Func<T, bool>>? filter = null, string? includeProperties = null);
+
     }
 }

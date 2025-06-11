@@ -1,4 +1,5 @@
 ﻿using BookStoreCatalog_API.Data;
+using BookStoreCatalog_API.Models.Settings;
 using BookStoreCatalog_API.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
@@ -73,6 +74,24 @@ namespace BookStoreCatalog_API.Repository
         public async Task Save()
         {
             await _dbContext.SaveChangesAsync();
+        }
+
+        public PagedList<T> GetAllPaged(Parameters parameters, Expression<Func<T, bool>>? filter = null, string? includeProperties = null)
+        {
+            IQueryable<T> query = dbSet;
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+            if (includeProperties != null)
+            {
+                foreach (var property in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(property);
+                }
+            }
+            return PagedList<T>.ToPagedList(query, parameters.PageNumber,parameters.PageSize);
         }
     }
 }
