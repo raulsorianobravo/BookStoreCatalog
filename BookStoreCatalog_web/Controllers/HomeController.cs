@@ -24,18 +24,31 @@ namespace BookStoreCatalog_web.Controllers
             _mapper = mapper;
         }
 
-        public async Task<IActionResult> Index(int pageNumber = 1)
+        public async Task<IActionResult> Index()
         {
             List<BookModelDTO> bookList = new List<BookModelDTO>();
 
-            if (pageNumber < 1) 
+            var response = await _bookService.GetAllBooks<APIResponse>(HttpContext.Session.GetString(ClassDefinitions.SessionToken));
+
+            if (response != null && response.IsSuccess)
+            {
+                bookList = JsonConvert.DeserializeObject<List<BookModelDTO>>(Convert.ToString(response.Result));
+            }
+            return View(bookList);
+        }
+
+        public async Task<IActionResult> IndexPaged(int pageNumber = 1)
+        {
+            List<BookModelDTO> bookList = new List<BookModelDTO>();
+
+            if (pageNumber < 1)
             {
                 pageNumber = 1;
             }
 
             BookPagedViewModel bookPagedViewModel = new BookPagedViewModel();
 
-            var response = await _bookService.GetAllBooksPaged<APIResponse>(HttpContext.Session.GetString(ClassDefinitions.SessionToken),pageNumber, 3);
+            var response = await _bookService.GetAllBooksPaged<APIResponse>(HttpContext.Session.GetString(ClassDefinitions.SessionToken), pageNumber, 3);
 
             if (response != null && response.IsSuccess)
             {
@@ -47,7 +60,7 @@ namespace BookStoreCatalog_web.Controllers
                     PageSize = JsonConvert.DeserializeObject<int>(Convert.ToString(response.TotalPages))
                 };
 
-                if (pageNumber > 1) 
+                if (pageNumber > 1)
                 {
                     bookPagedViewModel.Prev = "";
                 }
@@ -60,6 +73,8 @@ namespace BookStoreCatalog_web.Controllers
 
             return View(bookPagedViewModel);
         }
+
+
 
         public IActionResult Privacy()
         {

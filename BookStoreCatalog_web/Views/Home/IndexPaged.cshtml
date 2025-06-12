@@ -1,14 +1,18 @@
-﻿@using Microsoft.AspNetCore.Components
-@model IEnumerable<BookStoreCatalog_web.Models.DTO.BookModelDTO>
+﻿
+@using Microsoft.AspNetCore.Components
+@* @model IEnumerable<BookStoreCatalog_web.Models.DTO.BookModelDTO> *@
 
-@* @model BookStoreCatalog_web.ViewModel.BookPagedViewModel
- *@
+@model BookStoreCatalog_web.ViewModel.BookPagedViewModel
+
+
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "IndexPaged";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+
 <div class="row" style="--bs-gutter-x:0">
-    @foreach (var book in Model@* .BookList *@)
+    @foreach (var book in Model.BookList)
     {
         <div class="p-4 col-md-12 col-lg-6">
             <div class="row" style="border-radius:20px; border: 1px solid">
@@ -40,20 +44,21 @@
         </div>
     }
 </div>
-@* <a asp-action="Index"
+<a asp-action="IndexPaged"
    asp-route-pageNumber="@(1)" class="btn btn-outline-primary  000000">
     <i class="bi bi-skip-start-fill"></i>
 </a>
-<a asp-action="Index"
+<a asp-action="IndexPaged"
    asp-route-pageNumber="@(Model.PageNumber - 1)" class="btn btn-outline-primary @Model.Prev">
     Previous
 </a>
 <span>Page @Model.PageNumber de @Model.PageSize </span>
-<a asp-action="Index"
+<a asp-action="IndexPaged"
    asp-route-pageNumber="@(Model.PageNumber + 1)" class="btn btn-outline-primary @Model.Next">
     Next
 </a>
 <a asp-action="Index"
    asp-route-pageNumber="@Model.PageSize" class="btn btn-outline-primary">
     <i class="bi bi-skip-end-fill"></i>
-</a> *@
+</a>
+
